@@ -98,6 +98,15 @@ namespace Gilzoide.LottiePlayer
         }
 #endif
 
+        public readonly void Render(uint frameNum, Texture2D texture)
+        {
+            if (texture == null)
+            {
+                throw new ArgumentNullException(nameof(texture));
+            }
+            Render(frameNum, (uint) texture.width, (uint) texture.height, texture.GetRawTextureData<Color32>(), (uint) texture.width * (uint) UnsafeUtility.SizeOf<Color32>());
+        }
+
         public unsafe readonly void Render(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine)
         {
             RLottie.lottie_animation_render(NativeHandle, frameNum, buffer, width, height, bytesPerLine);
