@@ -16,9 +16,9 @@ namespace Gilzoide.LottiePlayer.Editor
             animation.Json = File.ReadAllText(ctx.assetPath);
             animation.CacheKey = AssetDatabase.AssetPathToGUID(ctx.assetPath);
             animation.ResourcePath = _resourcePath;
-            using (var instancedAnimation = animation.CreateAnimation())
+            using (var instancedAnimation = animation.CreateNativeAnimation())
             {
-                if (instancedAnimation == null)
+                if (!instancedAnimation.IsCreated)
                 {
                     throw new InvalidDataException($"Invalid Lottie JSON data @ {ctx.assetPath}");
                 }

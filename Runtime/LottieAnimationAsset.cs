@@ -39,5 +39,10 @@ namespace Gilzoide.LottiePlayer
         {
             return new LottieAnimation(Json, CacheKey, ResourcePath);
         }
+
+        public NativeLottieAnimation CreateNativeAnimation()
+        {
+            return new NativeLottieAnimation(Json, CacheKey, ResourcePath);
+        }
     }
 }

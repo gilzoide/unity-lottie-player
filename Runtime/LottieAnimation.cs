@@ -10,6 +10,11 @@ namespace Gilzoide.LottiePlayer
 
         public bool IsCreated => _nativeHandle.IsCreated;
 
+        public LottieAnimation(NativeLottieAnimation nativeHandle)
+        {
+            _nativeHandle = nativeHandle;
+        }
+
         public LottieAnimation(string path)
         {
             _nativeHandle = new NativeLottieAnimation(path);
