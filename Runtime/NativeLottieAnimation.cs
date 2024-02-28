@@ -1,11 +1,13 @@
 using System;
 using Gilzoide.LottiePlayer.RLottie;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 namespace Gilzoide.LottiePlayer
 {
     public struct NativeLottieAnimation : ILottieAnimation, IDisposable
     {
+        [field: NativeDisableUnsafePtrRestriction]
         public IntPtr NativeHandle { get; private set; }
 
         public readonly bool IsCreated => NativeHandle != IntPtr.Zero;

@@ -2,6 +2,7 @@
     "name": "Gilzoide.LottiePlayer",
     "rootNamespace": "Gilzoide.LottiePlayer",
     "references": [
+        "Unity.Burst",
         "Unity.Mathematics"
     ],
     "includePlatforms": [],
