@@ -16,6 +16,7 @@ namespace Gilzoide.LottiePlayer.Editor
             animation.Json = File.ReadAllText(ctx.assetPath);
             animation.CacheKey = AssetDatabase.AssetPathToGUID(ctx.assetPath);
             animation.ResourcePath = _resourcePath;
+            using (new ModelCacheSize.Scope(0))
             using (var instancedAnimation = animation.CreateNativeAnimation())
             {
                 if (!instancedAnimation.IsCreated)
