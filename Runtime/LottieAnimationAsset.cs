@@ -6,7 +6,7 @@ namespace Gilzoide.LottiePlayer
     {
         [SerializeField] private string _cacheKey = "";
         [SerializeField] private string _resourcePath = "";
-        [SerializeField, HideInInspector] private byte[] _bytes;
+        [SerializeField, HideInInspector] private string _json;
 
         /// <summary>
         /// Key used by rlottie cache system.
@@ -29,33 +29,15 @@ namespace Gilzoide.LottiePlayer
         /// <summary>
         /// Bytes that compose the Lottie JSON content.
         /// </summary>
-        public byte[] Bytes
+        public string Json
         {
-            get => _bytes;
-            set
-            {
-                if (value == null || value.Last() == 0)
-                {
-                    _bytes = value;
-                }
-                else
-                {
-                    _bytes = new byte[value.Length + 1];
-                    value.CopyTo(_bytes, 0);
-                    _bytes.LastRef() = 0;
-                }
-            }
+            get => _json;
+            set => _json = value ?? "";
         }
 
         public LottieAnimation CreateAnimation()
         {
-            unsafe
-            {
-                fixed (byte* ptr = _bytes)
-                {
-                    return new LottieAnimation(ptr, CacheKey, ResourcePath);
-                }
-            }
+            return new LottieAnimation(Json, CacheKey, ResourcePath);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Gilzoide.LottiePlayer.Editor
         public override void OnImportAsset(AssetImportContext ctx)
         {
             LottieAnimationAsset animation = ScriptableObject.CreateInstance<LottieAnimationAsset>();
-            animation.Bytes = File.ReadAllBytes(ctx.assetPath);
+            animation.Json = File.ReadAllText(ctx.assetPath);
             animation.CacheKey = AssetDatabase.AssetPathToGUID(ctx.assetPath);
             animation.ResourcePath = _resourcePath;
             using (var instancedAnimation = animation.CreateAnimation())
