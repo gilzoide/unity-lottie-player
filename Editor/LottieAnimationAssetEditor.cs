@@ -12,8 +12,7 @@ namespace Gilzoide.LottiePlayer.Editor
         void OnEnable()
         {
             _animation = ((LottieAnimationAsset) target).CreateNativeAnimation();
-            Vector2Int size = _animation.GetSize();
-            _texture = new Texture2D(size.x, size.y, TextureFormat.BGRA32, false);
+            _texture = _animation.CreateTexture();
         }
 
         void OnDisable()

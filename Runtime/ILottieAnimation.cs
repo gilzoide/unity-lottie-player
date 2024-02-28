@@ -8,6 +8,8 @@ namespace Gilzoide.LottiePlayer
 {
     public interface ILottieAnimation
     {
+        bool IsCreated { get; }
+
         Vector2Int GetSize();
         double GetDuration();
         int GetTotalFrame();
@@ -41,6 +43,19 @@ namespace Gilzoide.LottiePlayer
             where TAnimation : ILottieAnimation
         {
             return animation.GetFrameAtPos(time / (float) animation.GetDuration());
+        }
+
+        public static Texture2D CreateTexture<TAnimation>(this TAnimation animation, bool mipChain = false, bool linear = false)
+            where TAnimation : ILottieAnimation
+        {
+            Vector2Int size = animation.GetSize();
+            return CreateTexture(animation, size.x, size.y, mipChain, linear);
+        }
+
+        public static Texture2D CreateTexture<TAnimation>(this TAnimation animation, int width, int height, bool mipChain = false, bool linear = false)
+            where TAnimation : ILottieAnimation
+        {
+            return animation.IsCreated ? new Texture2D(width, height, TextureFormat.BGRA32, mipChain, linear) : null;
         }
 
         public static void Render<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, NativeArray<Color32> buffer, uint? bytesPerLine = null)
