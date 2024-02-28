@@ -1,10 +1,9 @@
 using System;
-using Unity.Collections;
 using UnityEngine;
 
 namespace Gilzoide.LottiePlayer
 {
-    public class LottieAnimation : IDisposable
+    public class LottieAnimation : ILottieAnimation, IDisposable
     {
         public NativeLottieAnimation NativeHandle { get; }
 
@@ -60,36 +59,9 @@ namespace Gilzoide.LottiePlayer
             return NativeHandle.RenderTree(frameNum, width, height);
         }
 
-        public void Render(uint frameNum, uint width, uint height, NativeArray<Color32> buffer, uint? bytesPerLine = null)
-        {
-            NativeHandle.Render(frameNum, width, height, buffer, bytesPerLine);
-        }
-
-        public void Render(uint frameNum, uint width, uint height, Color32[] buffer, uint? bytesPerLine = null)
-        {
-            NativeHandle.Render(frameNum, width, height, buffer, bytesPerLine);
-        }
-
-#if UNITY_2021_2_OR_NEWER
-        public void Render(uint frameNum, uint width, uint height,Span<Color32> buffer, uint? bytesPerLine = null)
-        {
-            NativeHandle.Render(frameNum, width, height, buffer, bytesPerLine);
-        }
-#endif
-
-        public void Render(uint frameNum, Texture2D texture)
-        {
-            NativeHandle.Render(frameNum, texture);
-        }
-
         public unsafe void Render(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine)
         {
             NativeHandle.Render(frameNum, width, height, buffer, bytesPerLine);
-        }
-
-        public void RenderAsync(uint frameNum, uint width, uint height, NativeArray<Color32> buffer, uint? bytesPerLine = null)
-        {
-            NativeHandle.RenderAsync(frameNum, width, height, buffer, bytesPerLine);
         }
 
         public unsafe void RenderAsync(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine)

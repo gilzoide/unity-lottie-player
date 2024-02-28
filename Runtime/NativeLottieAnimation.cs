@@ -1,11 +1,9 @@
 using System;
-using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 namespace Gilzoide.LottiePlayer
 {
-    public struct NativeLottieAnimation : IDisposable
+    public struct NativeLottieAnimation : ILottieAnimation, IDisposable
     {
         public IntPtr NativeHandle { get; private set; }
 
@@ -66,58 +64,9 @@ namespace Gilzoide.LottiePlayer
             return RLottie.lottie_animation_render_tree(NativeHandle, frameNum, width, height);
         }
 
-        public readonly void Render(uint frameNum, uint width, uint height, NativeArray<Color32> buffer, uint? bytesPerLine = null)
-        {
-            unsafe
-            {
-                Render(frameNum, width, height, (Color32*) buffer.GetUnsafePtr(), bytesPerLine ?? (uint) buffer.Length / width);
-            }
-        }
-
-        public readonly void Render(uint frameNum, uint width, uint height, Color32[] buffer, uint? bytesPerLine = null)
-        {
-            unsafe
-            {
-                fixed (Color32* ptr = buffer)
-                {
-                    Render(frameNum, width, height, ptr, bytesPerLine ?? (uint) buffer.Length / width);
-                }
-            }
-        }
-
-#if UNITY_2021_2_OR_NEWER
-        public readonly void Render(uint frameNum, uint width, uint height, ReadOnlySpan<Color32> buffer, uint? bytesPerLine = null)
-        {
-            unsafe
-            {
-                fixed (Color32* ptr = buffer)
-                {
-                    Render(frameNum, width, height, ptr, bytesPerLine ?? (uint) buffer.Length / width);
-                }
-            }
-        }
-#endif
-
-        public readonly void Render(uint frameNum, Texture2D texture)
-        {
-            if (texture == null)
-            {
-                throw new ArgumentNullException(nameof(texture));
-            }
-            Render(frameNum, (uint) texture.width, (uint) texture.height, texture.GetRawTextureData<Color32>(), (uint) texture.width * (uint) UnsafeUtility.SizeOf<Color32>());
-        }
-
         public unsafe readonly void Render(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine)
         {
             RLottie.lottie_animation_render(NativeHandle, frameNum, buffer, width, height, bytesPerLine);
-        }
-
-        public readonly void RenderAsync(uint frameNum, uint width, uint height, NativeArray<Color32> buffer, uint? bytesPerLine = null)
-        {
-            unsafe
-            {
-                RenderAsync(frameNum, width, height, (Color32*) buffer.GetUnsafePtr(), bytesPerLine ?? (uint) buffer.Length / width);
-            }
         }
 
         public unsafe readonly void RenderAsync(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine)
