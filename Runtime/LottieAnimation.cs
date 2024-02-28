@@ -5,23 +5,24 @@ namespace Gilzoide.LottiePlayer
 {
     public class LottieAnimation : ILottieAnimation, IDisposable
     {
-        public NativeLottieAnimation NativeHandle { get; }
+        public NativeLottieAnimation NativeHandle => _nativeHandle;
+        private NativeLottieAnimation _nativeHandle;
 
-        public bool IsCreated => NativeHandle.IsCreated;
+        public bool IsCreated => _nativeHandle.IsCreated;
 
         public LottieAnimation(string path)
         {
-            NativeHandle = new NativeLottieAnimation(path);
+            _nativeHandle = new NativeLottieAnimation(path);
         }
 
         public LottieAnimation(string data, string key, string resourcePath)
         {
-            NativeHandle = new NativeLottieAnimation(data, key, resourcePath);
+            _nativeHandle = new NativeLottieAnimation(data, key, resourcePath);
         }
 
         public unsafe LottieAnimation(byte* data, string key, string resourcePath)
         {
-            NativeHandle = new NativeLottieAnimation(data, key, resourcePath);
+            _nativeHandle = new NativeLottieAnimation(data, key, resourcePath);
         }
 
         ~LottieAnimation()
@@ -31,114 +32,114 @@ namespace Gilzoide.LottiePlayer
 
         public void Dispose()
         {
-            NativeHandle.Dispose();
+            _nativeHandle.Dispose();
         }
 
         public Vector2Int GetSize()
         {
-            return NativeHandle.GetSize();
+            return _nativeHandle.GetSize();
         }
 
         public double GetDuration()
         {
-            return NativeHandle.GetDuration();
+            return _nativeHandle.GetDuration();
         }
 
         public int GetTotalFrame()
         {
-            return NativeHandle.GetTotalFrame();
+            return _nativeHandle.GetTotalFrame();
         }
 
         public double GetFrameRate()
         {
-            return NativeHandle.GetFrameRate();
+            return _nativeHandle.GetFrameRate();
         }
 
         public int GetFrameAtPos(float pos)
         {
-            return NativeHandle.GetFrameAtPos(pos);
+            return _nativeHandle.GetFrameAtPos(pos);
         }
 
         public unsafe RLottie.LayerNode* RenderTree(uint frameNum, uint width, uint height)
         {
-            return NativeHandle.RenderTree(frameNum, width, height);
+            return _nativeHandle.RenderTree(frameNum, width, height);
         }
 
         public unsafe void Render(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine)
         {
-            NativeHandle.Render(frameNum, width, height, buffer, bytesPerLine);
+            _nativeHandle.Render(frameNum, width, height, buffer, bytesPerLine);
         }
 
         public unsafe void RenderAsync(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine)
         {
-            NativeHandle.RenderAsync(frameNum, width, height, buffer, bytesPerLine);
+            _nativeHandle.RenderAsync(frameNum, width, height, buffer, bytesPerLine);
         }
 
         public void RenderAsyncFlush()
         {
-            NativeHandle.RenderAsyncFlush();
+            _nativeHandle.RenderAsyncFlush();
         }
 
         public unsafe RLottie.MarkerList* GetMarkerList()
         {
-            return NativeHandle.GetMarkerList();
+            return _nativeHandle.GetMarkerList();
         }
 
         public void SetFillColorOverride(string keypath, Color value)
         {
-            NativeHandle.SetFillColorOverride(keypath, value);
+            _nativeHandle.SetFillColorOverride(keypath, value);
         }
 
         public void SetFillOpacityOverride(string keypath, float value)
         {
-            NativeHandle.SetFillOpacityOverride(keypath, value);
+            _nativeHandle.SetFillOpacityOverride(keypath, value);
         }
 
         public void SetStrokeColorOverride(string keypath, Color value)
         {
-            NativeHandle.SetStrokeColorOverride(keypath, value);
+            _nativeHandle.SetStrokeColorOverride(keypath, value);
         }
 
         public void SetStrokeOpacityOverride(string keypath, float value)
         {
-            NativeHandle.SetStrokeOpacityOverride(keypath, value);
+            _nativeHandle.SetStrokeOpacityOverride(keypath, value);
         }
 
         public void SetStrokeWidthOverride(string keypath, float value)
         {
-            NativeHandle.SetStrokeWidthOverride(keypath, value);
+            _nativeHandle.SetStrokeWidthOverride(keypath, value);
         }
 
         // Not yet implemented in rlottie (for some reason)
         // public void SetTransformAnchorOverride(string keypath, Vector2 value)
         // {
-        //     NativeHandle.SetTransformAnchorOverride(keypath, value);
+        //     _nativeHandle.SetTransformAnchorOverride(keypath, value);
         // }
 
         public void SetTransformPositionOverride(string keypath, Vector2 value)
         {
-            NativeHandle.SetTransformPositionOverride(keypath, value);
+            _nativeHandle.SetTransformPositionOverride(keypath, value);
         }
 
         public void SetTransformScaleOverride(string keypath, Vector2 value)
         {
-            NativeHandle.SetTransformScaleOverride(keypath, value);
+            _nativeHandle.SetTransformScaleOverride(keypath, value);
         }
 
         public void SetTransformRotationOverride(string keypath, float value)
         {
-            NativeHandle.SetTransformRotationOverride(keypath, value);
+            _nativeHandle.SetTransformRotationOverride(keypath, value);
         }
 
         // Not yet implemented in rlottie (for some reason)
         // public void SetTransformOpacityOverride(string keypath, float value)
         // {
-        //     NativeHandle.SetTransformOpacityOverride(keypath, value);
+        //     _nativeHandle.SetTransformOpacityOverride(keypath, value);
         // }
 
         public static implicit operator NativeLottieAnimation(LottieAnimation animation)
         {
-            return animation?.NativeHandle ?? default;
+            return animation?._nativeHandle ?? default;
         }
     }
 }
