@@ -1,0 +1,16 @@
+{
+    "name": "Gilzoide.LottiePlayer.Editor",
+    "rootNamespace": "Gilzoide.LottiePlayer.Editor",
+    "references": [
+        "GUID:3c71e7afe795b475a947c05afa44cfc9"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
