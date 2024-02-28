@@ -36,6 +36,12 @@ namespace Gilzoide.LottiePlayer
 
     public static class ILottieAnimationExtensions
     {
+        public static int GetFrameAtTime<TAnimation>(this TAnimation animation, float time)
+            where TAnimation : ILottieAnimation
+        {
+            return animation.GetFrameAtPos(time / (float) animation.GetDuration());
+        }
+
         public static void Render<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, NativeArray<Color32> buffer, uint? bytesPerLine = null)
             where TAnimation : ILottieAnimation
         {
