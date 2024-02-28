@@ -243,7 +243,10 @@ namespace Gilzoide.LottiePlayer
         public static extern Lottie_Animation lottie_animation_from_file(string path);
 
         [DllImport(LibraryName, CharSet = CharSet.Ansi)]
-        public static extern Lottie_Animation lottie_animation_from_data(string data, string key, string resource_path);
+        public static extern Lottie_Animation lottie_animation_from_data(byte* data, string key, string resourcePath);
+
+        [DllImport(LibraryName, CharSet = CharSet.Ansi)]
+        public static extern Lottie_Animation lottie_animation_from_data(string data, string key, string resourcePath);
 
         [DllImport(LibraryName)]
         public static extern void lottie_animation_destroy(Lottie_Animation animation);

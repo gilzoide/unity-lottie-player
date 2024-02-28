@@ -19,6 +19,11 @@ namespace Gilzoide.LottiePlayer
             NativeHandle = RLottie.lottie_animation_from_data(data, key, resourcePath);
         }
 
+        public unsafe NativeLottieAnimation(byte* data, string key, string resourcePath)
+        {
+            NativeHandle = RLottie.lottie_animation_from_data(data, key, resourcePath);
+        }
+
         public NativeLottieAnimation(IntPtr nativeHandle)
         {
             NativeHandle = nativeHandle;
