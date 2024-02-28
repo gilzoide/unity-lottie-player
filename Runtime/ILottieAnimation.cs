@@ -39,10 +39,25 @@ namespace Gilzoide.LottiePlayer
 
     public static class ILottieAnimationExtensions
     {
-        public static int GetFrameAtTime<TAnimation>(this TAnimation animation, float time)
+        public static bool IsValid<TAnimation>(this TAnimation animation)
             where TAnimation : ILottieAnimation
         {
-            return animation.GetFrameAtPos(time / (float) animation.GetDuration());
+            return animation?.IsCreated ?? false;
+        }
+
+        public static int GetFrameAtTime<TAnimation>(this TAnimation animation, float time, bool loop = true)
+            where TAnimation : ILottieAnimation
+        {
+            float duration = (float) animation.GetDuration();
+            if (duration <= 0)
+            {
+                return 0;
+            }
+            if (loop)
+            {
+                time = Mathf.Repeat(time, duration);
+            }
+            return animation.GetFrameAtPos(time / duration);
         }
 
         public static Texture2D CreateTexture<TAnimation>(this TAnimation animation, bool mipChain = false, bool linear = false)
