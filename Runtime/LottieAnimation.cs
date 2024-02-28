@@ -26,11 +26,6 @@ namespace Gilzoide.LottiePlayer
             _nativeHandle = new NativeLottieAnimation(data, key, resourcePath);
         }
 
-        public unsafe LottieAnimation(byte* data, string key, string resourcePath)
-        {
-            _nativeHandle = new NativeLottieAnimation(data, key, resourcePath);
-        }
-
         ~LottieAnimation()
         {
             Dispose();
