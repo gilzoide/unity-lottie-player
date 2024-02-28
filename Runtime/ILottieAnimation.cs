@@ -1,4 +1,5 @@
 using System;
+using Gilzoide.LottiePlayer.RLottie;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
@@ -13,12 +14,12 @@ namespace Gilzoide.LottiePlayer
         double GetFrameRate();
         int GetFrameAtPos(float pos);
 
-        unsafe RLottie.LayerNode* RenderTree(uint frameNum, uint width, uint height);
+        unsafe LayerNode* RenderTree(uint frameNum, uint width, uint height);
         unsafe void Render(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine);
         unsafe void RenderAsync(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine);
         void RenderAsyncFlush();
 
-        unsafe RLottie.MarkerList* GetMarkerList();
+        unsafe MarkerList* GetMarkerList();
 
         void SetFillColorOverride(string keypath, Color value);
         void SetFillOpacityOverride(string keypath, float value);

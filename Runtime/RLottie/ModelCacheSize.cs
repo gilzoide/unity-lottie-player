@@ -1,6 +1,6 @@
 using System;
 
-namespace Gilzoide.LottiePlayer
+namespace Gilzoide.LottiePlayer.RLottie
 {
     public static class ModelCacheSize
     {
@@ -10,7 +10,7 @@ namespace Gilzoide.LottiePlayer
             set
             {
                 _cacheSize = value;
-                RLottie.lottie_configure_model_cache_size(value);
+                RLottieCApi.lottie_configure_model_cache_size(value);
             }
         }
         private static uint _cacheSize = 10;

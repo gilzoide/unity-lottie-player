@@ -1,4 +1,5 @@
 using System;
+using Gilzoide.LottiePlayer.RLottie;
 using UnityEngine;
 
 namespace Gilzoide.LottiePlayer
@@ -65,7 +66,7 @@ namespace Gilzoide.LottiePlayer
             return _nativeHandle.GetFrameAtPos(pos);
         }
 
-        public unsafe RLottie.LayerNode* RenderTree(uint frameNum, uint width, uint height)
+        public unsafe LayerNode* RenderTree(uint frameNum, uint width, uint height)
         {
             return _nativeHandle.RenderTree(frameNum, width, height);
         }
@@ -85,7 +86,7 @@ namespace Gilzoide.LottiePlayer
             _nativeHandle.RenderAsyncFlush();
         }
 
-        public unsafe RLottie.MarkerList* GetMarkerList()
+        public unsafe MarkerList* GetMarkerList()
         {
             return _nativeHandle.GetMarkerList();
         }
