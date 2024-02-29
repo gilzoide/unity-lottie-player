@@ -12,9 +12,9 @@ namespace Gilzoide.LottiePlayer
 
         Vector2Int GetSize();
         double GetDuration();
-        int GetTotalFrame();
+        uint GetTotalFrame();
         double GetFrameRate();
-        int GetFrameAtPos(float pos);
+        uint GetFrameAtPos(float pos);
 
         unsafe LayerNode* RenderTree(uint frameNum, uint width, uint height);
         unsafe void Render(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine);
@@ -45,7 +45,7 @@ namespace Gilzoide.LottiePlayer
             return animation?.IsCreated ?? false;
         }
 
-        public static int GetFrameAtTime<TAnimation>(this TAnimation animation, float time, bool loop = true)
+        public static uint GetFrameAtTime<TAnimation>(this TAnimation animation, float time, bool loop = true)
             where TAnimation : ILottieAnimation
         {
             float duration = (float) animation.GetDuration();

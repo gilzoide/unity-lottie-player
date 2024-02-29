@@ -46,7 +46,7 @@ namespace Gilzoide.LottiePlayer
             return _nativeHandle.GetDuration();
         }
 
-        public int GetTotalFrame()
+        public uint GetTotalFrame()
         {
             return _nativeHandle.GetTotalFrame();
         }
@@ -56,7 +56,7 @@ namespace Gilzoide.LottiePlayer
             return _nativeHandle.GetFrameRate();
         }
 
-        public int GetFrameAtPos(float pos)
+        public uint GetFrameAtPos(float pos)
         {
             return _nativeHandle.GetFrameAtPos(pos);
         }

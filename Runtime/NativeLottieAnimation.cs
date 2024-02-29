@@ -47,9 +47,9 @@ namespace Gilzoide.LottiePlayer
             return RLottieCApi.lottie_animation_get_duration(NativeHandle);
         }
 
-        public readonly int GetTotalFrame()
+        public readonly uint GetTotalFrame()
         {
-            return checked((int) RLottieCApi.lottie_animation_get_totalframe(NativeHandle));
+            return checked((uint) RLottieCApi.lottie_animation_get_totalframe(NativeHandle));
         }
 
         public readonly double GetFrameRate()
@@ -57,9 +57,9 @@ namespace Gilzoide.LottiePlayer
             return RLottieCApi.lottie_animation_get_framerate(NativeHandle);
         }
 
-        public readonly int GetFrameAtPos(float pos)
+        public readonly uint GetFrameAtPos(float pos)
         {
-            return checked((int) RLottieCApi.lottie_animation_get_frame_at_pos(NativeHandle, pos));
+            return checked((uint) RLottieCApi.lottie_animation_get_frame_at_pos(NativeHandle, pos));
         }
 
         public unsafe readonly LayerNode* RenderTree(uint frameNum, uint width, uint height)
