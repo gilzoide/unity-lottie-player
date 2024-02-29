@@ -22,12 +22,12 @@ namespace Gilzoide.LottiePlayer
     [BurstCompile]
     public struct LottieAnimationRenderJob : IJob
     {
-        public NativeLottieAnimation Animation { get; set; }
-        public uint Frame { get; set; }
-        public uint Width { get; set; }
-        public uint Height { get; set; }
-        public NativeArray<Color32> Buffer { get; set; }
-        public uint? BytesPerLine { get; set; }
+        private NativeLottieAnimation Animation;
+        private uint Frame;
+        private uint Width;
+        private uint Height;
+        private NativeArray<Color32> Buffer;
+        private uint? BytesPerLine;
 
         public LottieAnimationRenderJob(NativeLottieAnimation animation, uint frameNum, Texture2D texture)
             : this(animation, frameNum, (uint) texture.width, (uint) texture.height, texture.GetRawTextureData<Color32>(), (uint) texture.width * (uint) UnsafeUtility.SizeOf<Color32>())
