@@ -26,13 +26,14 @@ namespace Gilzoide.LottiePlayer
         {
             base.OnEnable();
             _startTime = Time.time;
+            _lastFrame = uint.MaxValue;
             RecreateAnimationIfNeeded();
         }
 
         protected override void OnDestroy()
         {
             DestroyImmediate(_texture);
-            _animation?.Dispose();
+            _animation.Dispose();
             base.OnDestroy();
         }
 
@@ -71,10 +72,16 @@ namespace Gilzoide.LottiePlayer
 
         void Update()
         {
-            if (!Application.isPlaying || !_animation.IsValid())
+            if (!_animation.IsValid())
             {
                 return;
             }
+#if UNITY_EDITOR
+            if (!Application.isPlaying && _currentFrame != 0)
+            {
+                return;
+            }
+#endif
 
             _currentFrame = _animation.GetFrameAtTime(Time.time - _startTime, _loop);
             if (_currentFrame != _lastFrame)
