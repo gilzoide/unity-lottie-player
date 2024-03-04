@@ -12,6 +12,7 @@ namespace Gilzoide.LottiePlayer
         [SerializeField, Min(2)] protected int _width = 128;
         [SerializeField, Min(2)] protected int _height = 128;
         [SerializeField] protected bool _loop = true;
+        [SerializeField] protected bool _keepAspect = true;
 
         protected Texture2D _texture;
         protected NativeLottieAnimation _animation;
@@ -40,6 +41,10 @@ namespace Gilzoide.LottiePlayer
         protected override void OnPopulateMesh(VertexHelper vh)
         {
             Rect pixelAdjustedRect = GetPixelAdjustedRect();
+            if (_keepAspect)
+            {
+                pixelAdjustedRect = pixelAdjustedRect.AspectFit(_animation.GetSize().GetAspect());
+            }
             Color32 color = this.color;
             vh.Clear();
             vh.AddVert(new Vector3(pixelAdjustedRect.xMin, pixelAdjustedRect.yMin), color, new Vector2(0f, 1f));
