@@ -17,12 +17,9 @@ namespace Gilzoide.LottiePlayer.Editor
             animation.CacheKey = AssetDatabase.AssetPathToGUID(ctx.assetPath);
             animation.ResourcePath = _resourcePath;
             using (new RLottie.ModelCacheSize.Scope(0))
-            using (var instancedAnimation = animation.CreateNativeAnimation())
+            if (!animation.UpdateMetadata())
             {
-                if (!instancedAnimation.IsCreated)
-                {
-                    throw new InvalidDataException($"Invalid Lottie JSON data @ {ctx.assetPath}");
-                }
+                throw new InvalidDataException($"Invalid Lottie JSON data @ {ctx.assetPath}");
             }
             ctx.AddObjectToAsset("main", animation);
             ctx.SetMainObject(animation);
