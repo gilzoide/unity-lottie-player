@@ -63,14 +63,21 @@ namespace Gilzoide.LottiePlayer
         public static Texture2D CreateTexture<TAnimation>(this TAnimation animation, bool mipChain = false, bool linear = false)
             where TAnimation : ILottieAnimation
         {
-            Vector2Int size = animation.GetSize();
-            return CreateTexture(animation, size.x, size.y, mipChain, linear);
+            if (animation.IsValid())
+            {
+                Vector2Int size = animation.GetSize();
+                return CreateTexture(animation, size.x, size.y, mipChain, linear);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public static Texture2D CreateTexture<TAnimation>(this TAnimation animation, int width, int height, bool mipChain = false, bool linear = false)
             where TAnimation : ILottieAnimation
         {
-            return animation.IsCreated ? new Texture2D(width, height, TextureFormat.BGRA32, mipChain, linear) : null;
+            return animation.IsValid() ? new Texture2D(width, height, TextureFormat.BGRA32, mipChain, linear) : null;
         }
 
         public static void Render<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, NativeArray<Color32> buffer, uint? bytesPerLine = null)

@@ -56,7 +56,7 @@ namespace Gilzoide.LottiePlayer
                 return;
             }
 
-            if (_animation == null)
+            if (!_animation.IsValid())
             {
                 _animation = _animationAsset.CreateAnimation();
             }
