@@ -4,12 +4,14 @@ namespace Gilzoide.LottiePlayer
 {
     public class LottieAnimationAsset : ScriptableObject
     {
-        [SerializeField] private string _cacheKey = "";
-        [SerializeField] private string _resourcePath = "";
         [SerializeField] private Vector2Int _size;
         [SerializeField] private uint _frameCount;
         [SerializeField] private double _frameRate;
         [SerializeField] private double _duration;
+
+        [Space]
+        [SerializeField] private string _cacheKey = "";
+        [SerializeField] private string _resourcePath = "";
         [SerializeField, HideInInspector] private string _json;
 
         /// <summary>
