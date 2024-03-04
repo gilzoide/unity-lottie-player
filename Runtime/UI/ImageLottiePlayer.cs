@@ -9,12 +9,12 @@ namespace Gilzoide.LottiePlayer
     {
         [Space]
         [SerializeField] protected LottieAnimationAsset _animationAsset;
-        [SerializeField, Min(1)] protected int _width = 128;
-        [SerializeField, Min(1)] protected int _height = 128;
+        [SerializeField, Min(2)] protected int _width = 128;
+        [SerializeField, Min(2)] protected int _height = 128;
         [SerializeField] protected bool _loop = true;
 
         protected Texture2D _texture;
-        protected LottieAnimation _animation;
+        protected NativeLottieAnimation _animation;
         protected float _startTime = 0;
         protected uint _currentFrame = 0;
         protected uint _lastFrame = 0;
@@ -79,7 +79,7 @@ namespace Gilzoide.LottiePlayer
             _currentFrame = _animation.GetFrameAtTime(Time.time - _startTime, _loop);
             if (_currentFrame != _lastFrame)
             {
-                _renderJobHandle = _animation.NativeHandle.CreateRenderJob((uint) _currentFrame, _texture).Schedule();
+                _renderJobHandle = _animation.CreateRenderJob(_currentFrame, _texture).Schedule();
             }
         }
 
