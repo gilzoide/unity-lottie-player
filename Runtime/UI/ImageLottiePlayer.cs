@@ -64,7 +64,7 @@ namespace Gilzoide.LottiePlayer
 
             if (!_animation.IsValid())
             {
-                _animation = _animationAsset.CreateAnimation();
+                _animation = _animationAsset.CreateNativeAnimation();
             }
             if (_texture == null
                 || _width != _texture.width
