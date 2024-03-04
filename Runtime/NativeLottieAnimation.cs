@@ -38,47 +38,56 @@ namespace Gilzoide.LottiePlayer
 
         public readonly Vector2Int GetSize()
         {
+            ThrowIfNotCreated();
             RLottieCApi.lottie_animation_get_size(NativeHandle, out nuint width, out nuint height);
             return new Vector2Int(checked((int) width), checked((int) height));
         }
 
         public readonly double GetDuration()
         {
+            ThrowIfNotCreated();
             return RLottieCApi.lottie_animation_get_duration(NativeHandle);
         }
 
         public readonly uint GetTotalFrame()
         {
+            ThrowIfNotCreated();
             return checked((uint) RLottieCApi.lottie_animation_get_totalframe(NativeHandle));
         }
 
         public readonly double GetFrameRate()
         {
+            ThrowIfNotCreated();
             return RLottieCApi.lottie_animation_get_framerate(NativeHandle);
         }
 
         public readonly uint GetFrameAtPos(float pos)
         {
+            ThrowIfNotCreated();
             return checked((uint) RLottieCApi.lottie_animation_get_frame_at_pos(NativeHandle, pos));
         }
 
         public unsafe readonly LayerNode* RenderTree(uint frameNum, uint width, uint height)
         {
+            ThrowIfNotCreated();
             return RLottieCApi.lottie_animation_render_tree(NativeHandle, frameNum, width, height);
         }
 
-        public unsafe readonly void Render(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine)
+        public unsafe readonly void Render(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine, bool keepAspectRatio = true)
         {
-            RLottieCApi.lottie_animation_render(NativeHandle, frameNum, buffer, width, height, bytesPerLine);
+            ThrowIfNotCreated();
+            RLottieCApi.lottie_animation_render_aspect(NativeHandle, frameNum, buffer, width, height, bytesPerLine, keepAspectRatio ? 1 : 0);
         }
 
-        public unsafe readonly void RenderAsync(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine)
+        public unsafe readonly void RenderAsync(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine, bool keepAspectRatio = true)
         {
-            RLottieCApi.lottie_animation_render_async(NativeHandle, frameNum, buffer, width, height, bytesPerLine);
+            ThrowIfNotCreated();
+            RLottieCApi.lottie_animation_render_async_aspect(NativeHandle, frameNum, buffer, width, height, bytesPerLine, keepAspectRatio ? 1 : 0);
         }
 
         public readonly void RenderAsyncFlush()
         {
+            ThrowIfNotCreated();
             unsafe
             {
                 RLottieCApi.lottie_animation_render_flush(NativeHandle);
@@ -87,6 +96,7 @@ namespace Gilzoide.LottiePlayer
 
         public readonly unsafe MarkerList* GetMarkerList()
         {
+            ThrowIfNotCreated();
             return RLottieCApi.lottie_animation_get_markerlist(NativeHandle);
         }
 
@@ -144,15 +154,26 @@ namespace Gilzoide.LottiePlayer
 
         private readonly void SetPropertyOverride(AnimationProperty type, string keypath, float value)
         {
+            ThrowIfNotCreated();
             RLottieCApi.lottie_animation_property_override(NativeHandle, type, keypath, value);
         }
         private readonly void SetPropertyOverride(AnimationProperty type, string keypath, Vector2 value)
         {
+            ThrowIfNotCreated();
             RLottieCApi.lottie_animation_property_override(NativeHandle, type, keypath, value.x, value.y);
         }
         private readonly void SetPropertyOverride(AnimationProperty type, string keypath, Color value)
         {
+            ThrowIfNotCreated();
             RLottieCApi.lottie_animation_property_override(NativeHandle, type, keypath, value.r, value.g, value.b);
+        }
+
+        private readonly void ThrowIfNotCreated()
+        {
+            if (!IsCreated)
+            {
+                throw new NullReferenceException("Animation is null");
+            }
         }
     }
 }

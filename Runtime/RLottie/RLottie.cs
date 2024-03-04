@@ -267,10 +267,10 @@ namespace Gilzoide.LottiePlayer.RLottie
         public static extern nuint lottie_animation_get_frame_at_pos(Lottie_Animation animation, float pos);
 
         [DllImport(LibraryName)]
-        public static extern void lottie_animation_render(Lottie_Animation animation, nuint frame_num, Color32* buffer, nuint width, nuint height, nuint bytes_per_line);
+        public static extern void lottie_animation_render_aspect(Lottie_Animation animation, nuint frame_num, Color32* buffer, nuint width, nuint height, nuint bytes_per_line, int keepAspect);
 
         [DllImport(LibraryName)]
-        public static extern void lottie_animation_render_async(Lottie_Animation animation, nuint frame_num, Color32* buffer, nuint width, nuint height, nuint bytes_per_line);
+        public static extern void lottie_animation_render_async_aspect(Lottie_Animation animation, nuint frame_num, Color32* buffer, nuint width, nuint height, nuint bytes_per_line, int keepAspect);
 
         [DllImport(LibraryName)]
         public static extern Color32* lottie_animation_render_flush(Lottie_Animation animation);

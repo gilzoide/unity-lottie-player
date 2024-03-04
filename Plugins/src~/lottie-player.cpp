@@ -52,10 +52,47 @@
 
 #include "IUnityInterface.h"
 
-extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginLoad(IUnityInterfaces * unityInterfaces) {
+extern "C" {
+
+// Additional overloads with access to "keepAspectRatio" parameter
+RLOTTIE_API void lottie_animation_render_aspect(
+    Lottie_Animation_S *animation,
+    size_t frame_number,
+    uint32_t *buffer,
+    size_t width,
+    size_t height,
+    size_t bytes_per_line,
+    int keep_aspect
+) {
+    if (!animation) return;
+
+    rlottie::Surface surface(buffer, width, height, bytes_per_line);
+    animation->mAnimation->renderSync(frame_number, surface, keep_aspect);
+}
+
+RLOTTIE_API void lottie_animation_render_async_aspect(
+    Lottie_Animation_S *animation,
+    size_t frame_number,
+    uint32_t *buffer,
+    size_t width,
+    size_t height,
+    size_t bytes_per_line,
+    int keep_aspect
+) {
+    if (!animation) return;
+
+    rlottie::Surface surface(buffer, width, height, bytes_per_line);
+    animation->mRenderTask = animation->mAnimation->render(frame_number, surface, keep_aspect);
+    animation->mBufferRef = buffer;
+}
+
+// Unity entrypoints
+void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginLoad(IUnityInterfaces * unityInterfaces) {
     lottie_init();
 }
 
-extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginUnload() {
+void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginUnload() {
     lottie_shutdown();
 }
+
+}  // extern "C"

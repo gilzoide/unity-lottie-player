@@ -66,14 +66,14 @@ namespace Gilzoide.LottiePlayer
             return _nativeHandle.RenderTree(frameNum, width, height);
         }
 
-        public unsafe void Render(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine)
+        public unsafe void Render(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine, bool keepAspectRatio = true)
         {
-            _nativeHandle.Render(frameNum, width, height, buffer, bytesPerLine);
+            _nativeHandle.Render(frameNum, width, height, buffer, bytesPerLine, keepAspectRatio);
         }
 
-        public unsafe void RenderAsync(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine)
+        public unsafe void RenderAsync(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine, bool keepAspectRatio = true)
         {
-            _nativeHandle.RenderAsync(frameNum, width, height, buffer, bytesPerLine);
+            _nativeHandle.RenderAsync(frameNum, width, height, buffer, bytesPerLine, keepAspectRatio);
         }
 
         public void RenderAsyncFlush()
