@@ -8,3 +8,4 @@ Player for [Lottie](https://airbnb.io/lottie) animations, powered by [rlottie](h
 - [ImageLottiePlayer](Runtime/UI/ImageLottiePlayer.cs): a Unity UI component that plays Lottie animation assets, rendering to a texture of customizable size.
 - [Job System](https://docs.unity3d.com/Manual/JobSystemOverview.html)-friendly: texture updates may run in background threads.
   Use `ILottieAnimation.CreateRenderJob(...)` extension method for scheduling an animation render job.
+- Supported platforms: Windows, macOS, iOS, tvOS, visionOS, Android, WebGL
