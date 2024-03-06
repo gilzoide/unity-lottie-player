@@ -40,48 +40,26 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
                 return;
             }
 
-            var minX = float.PositiveInfinity;
-            var minY = float.PositiveInfinity;
+            var min = new float2(float.PositiveInfinity);
             var invSize = default(float);
             // if the shape is not too simple, we'll use z-order curve hash later; calculate polygon bbox
             if (Data.Length > 80)
             {
-                var maxX = float.NegativeInfinity;
-                var maxY = float.NegativeInfinity;
-
+                var max = new float2(float.NegativeInfinity);
                 for (int i = 0; i < outerLen; i++)
                 {
                     float2 point = Data[i];
-                    float x = point.x;
-                    float y = point.y;
-
-                    if (x < minX)
-                    {
-                        minX = x;
-                    }
-
-                    if (y < minY)
-                    {
-                        minY = y;
-                    }
-
-                    if (x > maxX)
-                    {
-                        maxX = x;
-                    }
-
-                    if (y > maxY)
-                    {
-                        maxY = y;
-                    }
+                    min = math.min(min, point);
+                    max = math.max(max, point);
                 }
 
                 // minX, minY and invSize are later used to transform coords into integers for z-order calculation
-                invSize = math.max(maxX - minX, maxY - minY);
+                float2 size = max - min;
+                invSize = math.max(size.x, size.y);
                 invSize = invSize != 0 ? 1 / invSize : 0;
             }
 
-            EarcutLinked(outerNode, OutTriangles, minX, minY, invSize, 0);
+            EarcutLinked(outerNode, OutTriangles, min, invSize, 0);
         }
 
         // Creates a circular doubly linked list from polygon points in the specified winding order.
@@ -93,16 +71,14 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
             {
                 for (int i = start; i < end; i++)
                 {
-                    float2 point = data[i];
-                    last = InsertNode(i, point.x, point.y, last);
+                    last = InsertNode(i, data[i], last);
                 }
             }
             else
             {
                 for (int i = end - 1; i >= start; i--)
                 {
-                    float2 point = data[i];
-                    last = InsertNode(i, point.x, point.y, last);
+                    last = InsertNode(i, data[i], last);
                 }
             }
 
@@ -135,7 +111,7 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
             {
                 again = false;
 
-                if (!p.steiner && (Equals(p, p.next) || Area(p.prev, p, p.next) == 0))
+                if (Equals(p, p.next) || Area(p.prev, p, p.next) == 0)
                 {
                     RemoveNode(p);
                     p = end = p.prev;
@@ -157,7 +133,7 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
         }
 
         // main ear slicing loop which triangulates a polygon (given as a linked list)
-        private readonly void EarcutLinked(Node ear, NativeList<int> triangles, float minX, float minY, float invSize, int pass = 0)
+        private readonly void EarcutLinked(Node ear, NativeList<int> triangles, float2 min, float invSize, int pass = 0)
         {
             if (ear == null)
             {
@@ -167,7 +143,7 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
             // interlink polygon nodes in z-order
             if (pass == 0 && invSize != 0)
             {
-                IndexCurve(ear, minX, minY, invSize);
+                IndexCurve(ear, min, invSize);
             }
 
             var stop = ear;
@@ -180,7 +156,7 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
                 prev = ear.prev;
                 next = ear.next;
 
-                if (invSize != 0 ? IsEarHashed(ear, minX, minY, invSize) : IsEar(ear))
+                if (invSize != 0 ? IsEarHashed(ear, min, invSize) : IsEar(ear))
                 {
                     // cut off the triangle
                     triangles.Add(BaseVertex + prev.i);
@@ -204,20 +180,20 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
                     // try filtering points and slicing again
                     if (pass == 0)
                     {
-                        EarcutLinked(FilterPoints(ear), triangles, minX, minY, invSize, 1);
+                        EarcutLinked(FilterPoints(ear), triangles, min, invSize, 1);
 
                         // if this didn't work, try curing all small self-intersections locally
                     }
                     else if (pass == 1)
                     {
                         ear = CureLocalIntersections(ear, triangles);
-                        EarcutLinked(ear, triangles, minX, minY, invSize, 2);
+                        EarcutLinked(ear, triangles, min, invSize, 2);
 
                         // as a last resort, try splitting the remaining polygon into two
                     }
                     else if (pass == 2)
                     {
-                        SplitEarcut(ear, triangles, minX, minY, invSize);
+                        SplitEarcut(ear, triangles, min, invSize);
                     }
 
                     break;
@@ -254,7 +230,7 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
             return true;
         }
 
-        static bool IsEarHashed(Node ear, float minX, float minY, float invSize)
+        static bool IsEarHashed(Node ear, float2 min, float invSize)
         {
             var a = ear.prev;
             var b = ear;
@@ -265,15 +241,12 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
                 return false; // reflex, can't be an ear
             }
 
-            // triangle bbox; min & max are calculated like this for speed
-            var minTX = a.x < b.x ? (a.x < c.x ? a.x : c.x) : (b.x < c.x ? b.x : c.x);
-            var minTY = a.y < b.y ? (a.y < c.y ? a.y : c.y) : (b.y < c.y ? b.y : c.y);
-            var maxTX = a.x > b.x ? (a.x > c.x ? a.x : c.x) : (b.x > c.x ? b.x : c.x);
-            var maxTY = a.y > b.y ? (a.y > c.y ? a.y : c.y) : (b.y > c.y ? b.y : c.y);
+            var minT = math.min(a.position, math.min(b.position, c.position));
+            var maxT = math.max(a.position, math.max(b.position, c.position));
 
             // z-order range for the current triangle bbox;
-            var minZ = ZOrder(minTX, minTY, minX, minY, invSize);
-            var maxZ = ZOrder(maxTX, maxTY, minX, minY, invSize);
+            var minZ = ZOrder(minT, min, invSize);
+            var maxZ = ZOrder(maxT, min, invSize);
 
             var p = ear.prevZ;
             var n = ear.nextZ;
@@ -358,7 +331,7 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
         }
 
         // try splitting polygon into two and triangulate them independently
-        private readonly void SplitEarcut(Node start, NativeList<int> triangles, float minX, float minY, float invSize)
+        private readonly void SplitEarcut(Node start, NativeList<int> triangles, float2 min, float invSize)
         {
             // look for a valid diagonal that divides the polygon into two
             var a = start;
@@ -377,8 +350,8 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
                         c = FilterPoints(c, c.next);
 
                         // run earcut on each half
-                        EarcutLinked(a, triangles, minX, minY, invSize);
-                        EarcutLinked(c, triangles, minX, minY, invSize);
+                        EarcutLinked(a, triangles, min, invSize);
+                        EarcutLinked(c, triangles, min, invSize);
                         return;
                     }
                     b = b.next;
@@ -388,14 +361,14 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
         }
 
         // interlink polygon nodes in z-order
-        static void IndexCurve(Node start, float minX, float minY, float invSize)
+        static void IndexCurve(Node start, float2 min, float invSize)
         {
             Node p = start;
             do
             {
                 if (p.z == null)
                 {
-                    p.z = ZOrder(p.x, p.y, minX, minY, invSize);
+                    p.z = ZOrder(p.position, min, invSize);
                 }
 
                 p.prevZ = p.prev;
@@ -487,23 +460,17 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
         }
 
         // z-order of a point given coords and inverse of the longer side of data bbox
-        static int ZOrder(float x, float y, float minX, float minY, float invSize)
+        static int ZOrder(float2 point, float2 min, float invSize)
         {
             // coords are transformed into non-negative 15-bit integer range
-            int intX = (int)(32767 * (x - minX) * invSize);
-            int intY = (int)(32767 * (y - minY) * invSize);
+            int2 value = (int2)(32767 * (point - min) * invSize);
 
-            intX = (intX | (intX << 8)) & 0x00FF00FF;
-            intX = (intX | (intX << 4)) & 0x0F0F0F0F;
-            intX = (intX | (intX << 2)) & 0x33333333;
-            intX = (intX | (intX << 1)) & 0x55555555;
+            value = (value | (value << 8)) & 0x00FF00FF;
+            value = (value | (value << 4)) & 0x0F0F0F0F;
+            value = (value | (value << 2)) & 0x33333333;
+            value = (value | (value << 1)) & 0x55555555;
 
-            intY = (intY | (intY << 8)) & 0x00FF00FF;
-            intY = (intY | (intY << 4)) & 0x0F0F0F0F;
-            intY = (intY | (intY << 2)) & 0x33333333;
-            intY = (intY | (intY << 1)) & 0x55555555;
-
-            return intX | (intY << 1);
+            return value.x | (value.y << 1);
         }
 
         // check if a point lies within a convex triangle
@@ -530,7 +497,7 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
         // check if two points are equal
         static bool Equals(Node p1, Node p2)
         {
-            return p1.x == p2.x && p1.y == p2.y;
+            return math.all(p1.position == p2.position);
         }
 
         // check if two segments intersect
@@ -577,12 +544,11 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
         {
             var p = a;
             var inside = false;
-            var px = (a.x + b.x) / 2;
-            var py = (a.y + b.y) / 2;
+            var position = (a.position + b.position) / 2;
             do
             {
-                if (((p.y > py) != (p.next.y > py)) && p.next.y != p.y &&
-                        (px < (p.next.x - p.x) * (py - p.y) / (p.next.y - p.y) + p.x))
+                if (((p.y > position.y) != (p.next.y > position.y)) && p.next.y != p.y &&
+                        (position.x < (p.next.x - p.x) * (position.y - p.y) / (p.next.y - p.y) + p.x))
                 {
                     inside = !inside;
                 }
@@ -597,8 +563,8 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
         // if one belongs to the outer ring and another to a hole, it merges it into a single ring
         static Node SplitPolygon(Node a, Node b)
         {
-            var a2 = new Node(a.i, a.x, a.y);
-            var b2 = new Node(b.i, b.x, b.y);
+            var a2 = new Node(a.i, a.position);
+            var b2 = new Node(b.i, b.position);
             var an = a.next;
             var bp = b.prev;
 
@@ -618,9 +584,9 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
         }
 
         // create a node and optionally link it with previous one (in a circular doubly linked list)
-        static Node InsertNode(int i, float x, float y, Node last)
+        static Node InsertNode(int i, float2 position, Node last)
         {
-            var p = new Node(i, x, y);
+            var p = new Node(i, position);
 
             if (last == null)
             {
@@ -657,9 +623,10 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
         public class Node
         {
             public int i;
-            public float x;
-            public float y;
+            public float2 position;
 
+            public float x => position.x;
+            public float y => position.y;
             public int? z;
 
             public Node prev;
@@ -668,16 +635,13 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
             public Node prevZ;
             public Node nextZ;
 
-            public bool steiner;
-
-            public Node(int i, float x, float y)
+            public Node(int i, float2 position)
             {
                 // vertex index in coordinates array
                 this.i = i;
 
                 // vertex coordinates
-                this.x = x;
-                this.y = y;
+                this.position = position;
 
                 // previous and next vertex nodes in a polygon ring
                 this.prev = null;
@@ -689,9 +653,6 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
                 // previous and next nodes in z-order
                 this.prevZ = null;
                 this.nextZ = null;
-
-                // indicates whether this is a steiner point
-                this.steiner = false;
             }
         }
 
