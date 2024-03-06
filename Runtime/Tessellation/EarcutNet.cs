@@ -1,40 +1,59 @@
-using System;
-using System.Collections.Generic;
+// This is a port of Earcut.NET that works with Unity collections
+// Reference: https://github.com/oberbichler/earcut.net
+// Earcut.NET license:
+//
+// ISC License
+//
+// Copyright (c) 2018, Thomas Oberbichler
+//
+// Permission to use, copy, modify, and/or distribute this software for any purpose
+// with or without fee is hereby granted, provided that the above copyright notice
+// and this permission notice appear in all copies.
+//
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+// REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+// FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+// INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+// OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+// TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
+// THIS SOFTWARE.
 
-namespace EarcutNet
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Mathematics;
+
+namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
 {
-    public class Earcut
+    public struct Earcut : IJob
     {
-        public static List<int> Tessellate(IList<float> data, IList<int> holeIndices)
+        public NativeSlice<float2> Data;
+        public NativeList<int> OutTriangles;
+        public int BaseVertex;
+
+        public void Execute()
         {
-            var hasHoles = holeIndices?.Count > 0;
-            var outerLen = hasHoles ? holeIndices[0] * 2 : data.Count;
-            var outerNode = LinkedList(data, 0, outerLen, true);
-            var triangles = new List<int>();
+            var outerLen = Data.Length;
+            var outerNode = LinkedList(Data, 0, outerLen, true);
 
             if (outerNode == null)
             {
-                return triangles;
+                return;
             }
 
             var minX = float.PositiveInfinity;
             var minY = float.PositiveInfinity;
-            var maxX = float.NegativeInfinity;
-            var maxY = float.NegativeInfinity;
             var invSize = default(float);
-
-            if (hasHoles)
-            {
-                outerNode = EliminateHoles(data, holeIndices, outerNode);
-            }
-
             // if the shape is not too simple, we'll use z-order curve hash later; calculate polygon bbox
-            if (data.Count > 80 * 2)
+            if (Data.Length > 80)
             {
-                for (int i = 0; i < outerLen; i += 2)
+                var maxX = float.NegativeInfinity;
+                var maxY = float.NegativeInfinity;
+
+                for (int i = 0; i < outerLen; i++)
                 {
-                    float x = data[i];
-                    float y = data[i + 1];
+                    float2 point = Data[i];
+                    float x = point.x;
+                    float y = point.y;
 
                     if (x < minX)
                     {
@@ -58,32 +77,32 @@ namespace EarcutNet
                 }
 
                 // minX, minY and invSize are later used to transform coords into integers for z-order calculation
-                invSize = Math.Max(maxX - minX, maxY - minY);
+                invSize = math.max(maxX - minX, maxY - minY);
                 invSize = invSize != 0 ? 1 / invSize : 0;
             }
 
-            EarcutLinked(outerNode, triangles, minX, minY, invSize, 0);
-
-            return triangles;
+            EarcutLinked(outerNode, OutTriangles, minX, minY, invSize, 0);
         }
 
         // Creates a circular doubly linked list from polygon points in the specified winding order.
-        static Node LinkedList(IList<float> data, int start, int end, bool clockwise)
+        static Node LinkedList(NativeSlice<float2> data, int start, int end, bool clockwise)
         {
             var last = default(Node);
 
             if (clockwise == (SignedArea(data, start, end) > 0))
             {
-                for (int i = start; i < end; i += 2)
+                for (int i = start; i < end; i++)
                 {
-                    last = InsertNode(i, data[i], data[i + 1], last);
+                    float2 point = data[i];
+                    last = InsertNode(i, point.x, point.y, last);
                 }
             }
             else
             {
-                for (int i = end - 2; i >= start; i -= 2)
+                for (int i = end - 1; i >= start; i--)
                 {
-                    last = InsertNode(i, data[i], data[i + 1], last);
+                    float2 point = data[i];
+                    last = InsertNode(i, point.x, point.y, last);
                 }
             }
 
@@ -138,7 +157,7 @@ namespace EarcutNet
         }
 
         // main ear slicing loop which triangulates a polygon (given as a linked list)
-        static void EarcutLinked(Node ear, IList<int> triangles, float minX, float minY, float invSize, int pass = 0)
+        private readonly void EarcutLinked(Node ear, NativeList<int> triangles, float minX, float minY, float invSize, int pass = 0)
         {
             if (ear == null)
             {
@@ -164,9 +183,9 @@ namespace EarcutNet
                 if (invSize != 0 ? IsEarHashed(ear, minX, minY, invSize) : IsEar(ear))
                 {
                     // cut off the triangle
-                    triangles.Add(prev.i / 2);
-                    triangles.Add(ear.i / 2);
-                    triangles.Add(next.i / 2);
+                    triangles.Add(BaseVertex + prev.i);
+                    triangles.Add(BaseVertex + ear.i);
+                    triangles.Add(BaseVertex + next.i);
 
                     RemoveNode(ear);
 
@@ -311,7 +330,7 @@ namespace EarcutNet
         }
 
         // go through all polygon nodes and cure small local self-intersections
-        static Node CureLocalIntersections(Node start, IList<int> triangles)
+        private readonly Node CureLocalIntersections(Node start, NativeList<int> triangles)
         {
             var p = start;
             do
@@ -322,9 +341,9 @@ namespace EarcutNet
                 if (!Equals(a, b) && Intersects(a, p, p.next, b) && LocallyInside(a, b) && LocallyInside(b, a))
                 {
 
-                    triangles.Add(a.i / 2);
-                    triangles.Add(p.i / 2);
-                    triangles.Add(b.i / 2);
+                    triangles.Add(BaseVertex + a.i);
+                    triangles.Add(BaseVertex + p.i);
+                    triangles.Add(BaseVertex + b.i);
 
                     // remove two nodes involved
                     RemoveNode(p);
@@ -339,7 +358,7 @@ namespace EarcutNet
         }
 
         // try splitting polygon into two and triangulate them independently
-        static void SplitEarcut(Node start, IList<int> triangles, float minX, float minY, float invSize)
+        private readonly void SplitEarcut(Node start, NativeList<int> triangles, float minX, float minY, float invSize)
         {
             // look for a valid diagonal that divides the polygon into two
             var a = start;
@@ -366,133 +385,6 @@ namespace EarcutNet
                 }
                 a = a.next;
             } while (a != start);
-        }
-
-        // link every hole into the outer loop, producing a single-ring polygon without holes
-        static Node EliminateHoles(IList<float> data, IList<int> holeIndices, Node outerNode)
-        {
-            var queue = new List<Node>();
-
-            var len = holeIndices.Count;
-
-            for (var i = 0; i < len; i++)
-            {
-                var start = holeIndices[i] * 2;
-                var end = i < len - 1 ? holeIndices[i + 1] * 2 : data.Count;
-                var list = LinkedList(data, start, end, false);
-                if (list == list.next)
-                {
-                    list.steiner = true;
-                }
-
-                queue.Add(GetLeftmost(list));
-            }
-
-            queue.Sort(CompareX);
-
-            // process holes from left to right
-            for (var i = 0; i < queue.Count; i++)
-            {
-                EliminateHole(queue[i], outerNode);
-                outerNode = FilterPoints(outerNode, outerNode.next);
-            }
-
-            return outerNode;
-        }
-
-        static int CompareX(Node a, Node b)
-        {
-            return Math.Sign(a.x - b.x);
-        }
-
-        // find a bridge between vertices that connects hole with an outer ring and and link it
-        static void EliminateHole(Node hole, Node outerNode)
-        {
-            outerNode = FindHoleBridge(hole, outerNode);
-            if (outerNode != null)
-            {
-                var b = SplitPolygon(outerNode, hole);
-                FilterPoints(b, b.next);
-            }
-        }
-
-        // David Eberly's algorithm for finding a bridge between hole and outer polygon
-        static Node FindHoleBridge(Node hole, Node outerNode)
-        {
-            var p = outerNode;
-            var hx = hole.x;
-            var hy = hole.y;
-            var qx = float.NegativeInfinity;
-            Node m = null;
-
-            // find a segment intersected by a ray from the hole's leftmost point to the left;
-            // segment's endpoint with lesser x will be potential connection point
-            do
-            {
-                if (hy <= p.y && hy >= p.next.y && p.next.y != p.y)
-                {
-                    var x = p.x + (hy - p.y) * (p.next.x - p.x) / (p.next.y - p.y);
-                    if (x <= hx && x > qx)
-                    {
-                        qx = x;
-                        if (x == hx)
-                        {
-                            if (hy == p.y)
-                            {
-                                return p;
-                            }
-
-                            if (hy == p.next.y)
-                            {
-                                return p.next;
-                            }
-                        }
-                        m = p.x < p.next.x ? p : p.next;
-                    }
-                }
-                p = p.next;
-            } while (p != outerNode);
-
-            if (m == null)
-            {
-                return null;
-            }
-
-            if (hx == qx)
-            {
-                return m.prev; // hole touches outer segment; pick lower endpoint
-            }
-
-            // look for points inside the triangle of hole point, segment intersection and endpoint;
-            // if there are no points found, we have a valid connection;
-            // otherwise choose the point of the minimum angle with the ray as connection point
-
-            var stop = m;
-            var mx = m.x;
-            var my = m.y;
-            var tanMin = float.PositiveInfinity;
-            float tan;
-
-            p = m.next;
-
-            while (p != stop)
-            {
-                if (hx >= p.x && p.x >= mx && hx != p.x && PointInTriangle(hy < my ? hx : qx, hy, mx, my, hy < my ? qx : hx, hy, p.x, p.y))
-                {
-
-                    tan = Math.Abs(hy - p.y) / (hx - p.x); // tangential
-
-                    if ((tan < tanMin || (tan == tanMin && p.x > m.x)) && LocallyInside(p, hole))
-                    {
-                        m = p;
-                        tanMin = tan;
-                    }
-                }
-
-                p = p.next;
-            }
-
-            return m;
         }
 
         // interlink polygon nodes in z-order
@@ -612,24 +504,6 @@ namespace EarcutNet
             intY = (intY | (intY << 1)) & 0x55555555;
 
             return intX | (intY << 1);
-        }
-
-        // find the leftmost node of a polygon ring
-        static Node GetLeftmost(Node start)
-        {
-            Node p = start;
-            Node leftmost = start;
-            do
-            {
-                if (p.x < leftmost.x)
-                {
-                    leftmost = p;
-                }
-
-                p = p.next;
-            } while (p != start);
-
-            return leftmost;
         }
 
         // check if a point lies within a convex triangle
@@ -780,7 +654,7 @@ namespace EarcutNet
             }
         }
 
-        class Node
+        public class Node
         {
             public int i;
             public float x;
@@ -821,52 +695,17 @@ namespace EarcutNet
             }
         }
 
-        static float SignedArea(IList<float> data, int start, int end)
+        static float SignedArea(NativeSlice<float2> data, int start, int end)
         {
             var sum = default(float);
 
-            for (int i = start, j = end - 2; i < end; i += 2)
+            for (int i = start, j = end - 1; i < end; i++)
             {
-                sum += (data[j] - data[i]) * (data[i + 1] + data[j + 1]);
+                sum += (data[j].x - data[i].x) * (data[i].y + data[j].y);
                 j = i;
             }
 
             return sum;
-        }
-
-        // return a percentage difference between the polygon area and its triangulation area;
-        // used to verify correctness of triangulation
-        public static float Deviation(IList<float> data, IList<int> holeIndices, IList<int> triangles)
-        {
-            var hasHoles = holeIndices.Count > 0;
-            var outerLen = hasHoles ? holeIndices[0] * 2 : data.Count;
-
-            var polygonArea = Math.Abs(SignedArea(data, 0, outerLen));
-            if (hasHoles)
-            {
-                var len = holeIndices.Count;
-
-                for (var i = 0; i < len; i++)
-                {
-                    var start = holeIndices[i] * 2;
-                    var end = i < len - 1 ? holeIndices[i + 1] * 2 : data.Count;
-                    polygonArea -= Math.Abs(SignedArea(data, start, end));
-                }
-            }
-
-            var trianglesArea = default(float);
-            for (var i = 0; i < triangles.Count; i += 3)
-            {
-                var a = triangles[i] * 2;
-                var b = triangles[i + 1] * 2;
-                var c = triangles[i + 2] * 2;
-                trianglesArea += Math.Abs(
-                    (data[a] - data[c]) * (data[b + 1] - data[a + 1]) -
-                    (data[a] - data[b]) * (data[c + 1] - data[a + 1]));
-            }
-
-            return polygonArea == 0 && trianglesArea == 0 ? 0 :
-                Math.Abs((trianglesArea - polygonArea) / polygonArea);
         }
     }
 }

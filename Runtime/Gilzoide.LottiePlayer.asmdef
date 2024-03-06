@@ -3,6 +3,7 @@
     "rootNamespace": "Gilzoide.LottiePlayer",
     "references": [
         "Unity.Burst",
+        "Unity.Collections",
         "Unity.Mathematics"
     ],
     "includePlatforms": [],
