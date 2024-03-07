@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Gilzoide.LottiePlayer.RLottie;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -18,7 +19,7 @@ namespace Gilzoide.LottiePlayer
             {
                 throw new ArgumentOutOfRangeException(nameof(step), "Step must be positive.");
             }
-            if (path.elmCount > int.MaxValue)
+            if ((uint) path.elmCount > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException(nameof(step), "Path element count is bigger than 2147483647.");
             }
@@ -58,7 +59,7 @@ namespace Gilzoide.LottiePlayer
             {
                 throw new ArgumentOutOfRangeException(nameof(step), "Step must be positive.");
             }
-            if (path.elmCount > int.MaxValue)
+            if ((uint) path.elmCount > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException(nameof(step), "Path element count is bigger than 2147483647.");
             }
@@ -101,7 +102,7 @@ namespace Gilzoide.LottiePlayer
                         case Path.Element.CubicTo:
                             _curveEnumerator = new FlattenedBezierCurveEnumerator(
                                 new BezierCurve(
-                                    _current.ToFloat3(),
+                                    new float3(_current, 0),
                                     _path.ptPtr[_pointIndex + 0].ToFloat3(),
                                     _path.ptPtr[_pointIndex + 1].ToFloat3(),
                                     _path.ptPtr[_pointIndex + 2].ToFloat3()

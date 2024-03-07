@@ -59,9 +59,9 @@ namespace Gilzoide.LottiePlayer.RLottie
     public unsafe struct Path
     {
         public Vector2* ptPtr;
-        public nuint ptCount;
+        public UIntPtr ptCount;
         public Element* elmPtr;
-        public nuint elmCount;
+        public UIntPtr elmCount;
 
         public enum Element : byte
         {
@@ -76,9 +76,9 @@ namespace Gilzoide.LottiePlayer.RLottie
     {
         // struct {
         //     const float *ptPtr;
-        //     size_t       ptCount;
+        //     UIntPtr       ptCount;
         //     const char  *elmPtr;
-        //     size_t       elmCount;
+        //     UIntPtr       elmCount;
         // }
         public Path mPath;
         public MaskType mMode;
@@ -97,14 +97,14 @@ namespace Gilzoide.LottiePlayer.RLottie
     public unsafe struct Marker
     {
         public char* name;
-        public nuint startframe;
-        public nuint endframe;
+        public UIntPtr startframe;
+        public UIntPtr endframe;
     }
 
     public unsafe struct MarkerList
     {
         public Marker* ptr;
-        public nuint size;
+        public UIntPtr size;
     }
 
     public enum ChangeFlag : int
@@ -119,9 +119,9 @@ namespace Gilzoide.LottiePlayer.RLottie
     {
         // struct {
         //     const float *ptPtr;
-        //     size_t       ptCount;
+        //     UIntPtr       ptCount;
         //     const char  *elmPtr;
-        //     size_t       elmCount;
+        //     UIntPtr       elmCount;
         // }
         public Path mPath;
 
@@ -146,7 +146,7 @@ namespace Gilzoide.LottiePlayer.RLottie
         {
             public GradientType  type;
             public GradientStop* stopPtr;
-            public nuint stopCount;
+            public UIntPtr stopCount;
             // struct {
             //     float x, y;
             // }
@@ -159,8 +159,8 @@ namespace Gilzoide.LottiePlayer.RLottie
         public struct ImageInfo
         {
             public byte* data;
-            public nuint width;
-            public nuint height;
+            public UIntPtr width;
+            public UIntPtr height;
             public byte mAlpha;
             // struct {
             //     float m11; float m12; float m13;
@@ -183,32 +183,32 @@ namespace Gilzoide.LottiePlayer.RLottie
 
         // struct {
         //     LOTMask *ptr;
-        //     size_t size;
+        //     UIntPtr size;
         // }
         public Mask* mMaskList_ptr;
-        public nuint mMaskList_size;
+        public UIntPtr mMaskList_size;
 
         // struct {
         //     const float *ptPtr;
-        //     size_t ptCount;
+        //     UIntPtr ptCount;
         //     const char *elmPtr;
-        //     size_t elmCount;
+        //     UIntPtr elmCount;
         // }
         public Path mClipPath;
 
         // struct {
         //     struct LOTLayerNode **ptr;
-        //     size_t size;
+        //     UIntPtr size;
         // }
         public LayerNode** mLayerList_ptr;
-        public nuint mLayerList_size;
+        public UIntPtr mLayerList_size;
 
         // struct {
         //     LOTNode **ptr;
-        //     size_t size;
+        //     UIntPtr size;
         // }
         public Node** mNodeList_ptr;
-        public nuint mNodeList_size;
+        public UIntPtr mNodeList_size;
 
         public MatteType mMatte;
         public int mVisible;
@@ -249,28 +249,28 @@ namespace Gilzoide.LottiePlayer.RLottie
         public static extern void lottie_animation_destroy(Lottie_Animation animation);
 
         [DllImport(LibraryName)]
-        public static extern void lottie_animation_get_size(Lottie_Animation animation, out nuint width, out nuint height);
+        public static extern void lottie_animation_get_size(Lottie_Animation animation, out UIntPtr width, out UIntPtr height);
 
         [DllImport(LibraryName)]
         public static extern double lottie_animation_get_duration(Lottie_Animation animation);
 
         [DllImport(LibraryName)]
-        public static extern nuint lottie_animation_get_totalframe(Lottie_Animation animation);
+        public static extern UIntPtr lottie_animation_get_totalframe(Lottie_Animation animation);
 
         [DllImport(LibraryName)]
         public static extern double lottie_animation_get_framerate(Lottie_Animation animation);
 
         [DllImport(LibraryName)]
-        public static extern LayerNode* lottie_animation_render_tree(Lottie_Animation animation, nuint frame_num, nuint width, nuint height);
+        public static extern LayerNode* lottie_animation_render_tree(Lottie_Animation animation, UIntPtr frame_num, UIntPtr width, UIntPtr height);
 
         [DllImport(LibraryName)]
-        public static extern nuint lottie_animation_get_frame_at_pos(Lottie_Animation animation, float pos);
+        public static extern UIntPtr lottie_animation_get_frame_at_pos(Lottie_Animation animation, float pos);
 
         [DllImport(LibraryName)]
-        public static extern void lottie_animation_render_aspect(Lottie_Animation animation, nuint frame_num, Color32* buffer, nuint width, nuint height, nuint bytes_per_line, int keepAspect);
+        public static extern void lottie_animation_render_aspect(Lottie_Animation animation, UIntPtr frame_num, Color32* buffer, UIntPtr width, UIntPtr height, UIntPtr bytes_per_line, int keepAspect);
 
         [DllImport(LibraryName)]
-        public static extern void lottie_animation_render_async_aspect(Lottie_Animation animation, nuint frame_num, Color32* buffer, nuint width, nuint height, nuint bytes_per_line, int keepAspect);
+        public static extern void lottie_animation_render_async_aspect(Lottie_Animation animation, UIntPtr frame_num, Color32* buffer, UIntPtr width, UIntPtr height, UIntPtr bytes_per_line, int keepAspect);
 
         [DllImport(LibraryName)]
         public static extern Color32* lottie_animation_render_flush(Lottie_Animation animation);
@@ -288,6 +288,6 @@ namespace Gilzoide.LottiePlayer.RLottie
         public static extern MarkerList* lottie_animation_get_markerlist(Lottie_Animation animation);
 
         [DllImport(LibraryName)]
-        public static extern void lottie_configure_model_cache_size(nuint cacheSize);
+        public static extern void lottie_configure_model_cache_size(UIntPtr cacheSize);
     }
 }

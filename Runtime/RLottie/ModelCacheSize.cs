@@ -10,7 +10,7 @@ namespace Gilzoide.LottiePlayer.RLottie
             set
             {
                 _cacheSize = value;
-                RLottieCApi.lottie_configure_model_cache_size(value);
+                RLottieCApi.lottie_configure_model_cache_size((UIntPtr) value);
             }
         }
         private static uint _cacheSize = 10;

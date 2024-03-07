@@ -39,7 +39,7 @@ namespace Gilzoide.LottiePlayer
         public readonly Vector2Int GetSize()
         {
             ThrowIfNotCreated();
-            RLottieCApi.lottie_animation_get_size(NativeHandle, out nuint width, out nuint height);
+            RLottieCApi.lottie_animation_get_size(NativeHandle, out UIntPtr width, out UIntPtr height);
             return new Vector2Int(checked((int) width), checked((int) height));
         }
 
@@ -70,19 +70,19 @@ namespace Gilzoide.LottiePlayer
         public unsafe readonly LayerNode* RenderTree(uint frameNum, uint width, uint height)
         {
             ThrowIfNotCreated();
-            return RLottieCApi.lottie_animation_render_tree(NativeHandle, frameNum, width, height);
+            return RLottieCApi.lottie_animation_render_tree(NativeHandle, (UIntPtr) frameNum, (UIntPtr) width, (UIntPtr) height);
         }
 
         public unsafe readonly void Render(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine, bool keepAspectRatio = true)
         {
             ThrowIfNotCreated();
-            RLottieCApi.lottie_animation_render_aspect(NativeHandle, frameNum, buffer, width, height, bytesPerLine, keepAspectRatio ? 1 : 0);
+            RLottieCApi.lottie_animation_render_aspect(NativeHandle, (UIntPtr) frameNum, buffer, (UIntPtr) width, (UIntPtr) height, (UIntPtr) bytesPerLine, keepAspectRatio ? 1 : 0);
         }
 
         public unsafe readonly void RenderAsync(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine, bool keepAspectRatio = true)
         {
             ThrowIfNotCreated();
-            RLottieCApi.lottie_animation_render_async_aspect(NativeHandle, frameNum, buffer, width, height, bytesPerLine, keepAspectRatio ? 1 : 0);
+            RLottieCApi.lottie_animation_render_async_aspect(NativeHandle, (UIntPtr) frameNum, buffer, (UIntPtr) width, (UIntPtr) height, (UIntPtr) bytesPerLine, keepAspectRatio ? 1 : 0);
         }
 
         public readonly void RenderAsyncFlush()
