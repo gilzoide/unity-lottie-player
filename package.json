@@ -8,5 +8,11 @@
   "author": {
     "name": "Gil Barbosa Reis"
   },
-  "unity": "2020.2"
+  "unity": "2020.2",
+  "dependencies": {
+    "com.unity.burst": "1.0.0",
+    "com.unity.collections": "1.0.0",
+    "com.unity.mathematics": "1.0.0",
+    "com.unity.splines": "1.0.0"
+  }
 }

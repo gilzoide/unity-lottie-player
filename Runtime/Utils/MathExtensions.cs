@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Gilzoide.LottiePlayer
@@ -59,6 +60,11 @@ namespace Gilzoide.LottiePlayer
             rect.min += (currentSize - newSize) * 0.5f;
             rect.size = newSize;
             return rect;
+        }
+
+        public static float3 ToFloat3(this Vector2 v)
+        {
+            return new float3(v.x, v.y, 0);
         }
     }
 }
