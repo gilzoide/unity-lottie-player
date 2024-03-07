@@ -27,10 +27,10 @@ using Unity.Mathematics;
 namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
 {
     [BurstCompile]
-    public unsafe struct Earcut : IJob
+    public unsafe struct EarcutJob : IJob
     {
         public NativeSlice<float2> Data;
-        public NativeList<int> OutTriangles;
+        public NativeList<int> OutIndices;
         [NativeDisableUnsafePtrRestriction] public AllocatorHelper<RewindableAllocator> NodeAllocator;
         public int BaseVertex;
 
@@ -63,7 +63,7 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
                 invSize = invSize != 0 ? 1 / invSize : 0;
             }
 
-            EarcutLinked(outerNode, OutTriangles, min, invSize, 0);
+            EarcutLinked(outerNode, OutIndices, min, invSize, 0);
         }
 
         // Creates a circular doubly linked list from polygon points in the specified winding order.
