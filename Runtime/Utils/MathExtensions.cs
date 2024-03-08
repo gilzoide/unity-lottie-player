@@ -26,6 +26,11 @@ namespace Gilzoide.LottiePlayer
             return new Vector2(vector.x, y);
         }
 
+        public static Vector3 WithZ(this Vector2 vector, float z)
+        {
+            return new Vector3(vector.x, vector.y, z);
+        }
+
         public static Vector2 AspectFit(this Vector2 vector, float aspect)
         {
             if (aspect <= 0)

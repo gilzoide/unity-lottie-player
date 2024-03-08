@@ -18,26 +18,27 @@
 // TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 // THIS SOFTWARE.
 
+using Gilzoide.LottiePlayer.RLottie;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
 {
     [BurstCompile]
     public unsafe struct EarcutJob : IJob
     {
-        public NativeSlice<float2> Data;
+        public NativeArray<Vector3> Data;
         public NativeList<int> OutIndices;
         [NativeDisableUnsafePtrRestriction] public AllocatorHelper<RewindableAllocator> NodeAllocator;
         public int BaseVertex;
 
         public void Execute()
         {
-            var outerLen = Data.Length;
-            var outerNode = LinkedList(Data, 0, outerLen, true);
+            var outerNode = LinkedList(Data, true);
 
             if (outerNode == null)
             {
@@ -50,11 +51,10 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
             if (Data.Length > 80)
             {
                 var max = new float2(float.NegativeInfinity);
-                for (int i = 0; i < outerLen; i++)
+                foreach (float3 point in Data)
                 {
-                    float2 point = Data[i];
-                    min = math.min(min, point);
-                    max = math.max(max, point);
+                    min = math.min(min, point.xy);
+                    max = math.max(max, point.xy);
                 }
 
                 // minX, minY and invSize are later used to transform coords into integers for z-order calculation
@@ -67,22 +67,23 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
         }
 
         // Creates a circular doubly linked list from polygon points in the specified winding order.
-        private readonly Node* LinkedList(NativeSlice<float2> data, int start, int end, bool clockwise)
+        private readonly Node* LinkedList(NativeArray<Vector3> data, bool clockwise)
         {
             Node* last = null;
-
-            if (clockwise == (SignedArea(data, start, end) > 0))
+            int start = 0;
+            int end = data.Length;
+            if (clockwise == (SignedArea(data) > 0))
             {
                 for (int i = start; i < end; i++)
                 {
-                    last = InsertNode(i, data[i], last);
+                    last = InsertNode(i, (Vector2) data[i], last);
                 }
             }
             else
             {
                 for (int i = end - 1; i >= start; i--)
                 {
-                    last = InsertNode(i, data[i], last);
+                    last = InsertNode(i, (Vector2) data[i], last);
                 }
             }
 
@@ -667,10 +668,11 @@ namespace Gilzoide.LottiePlayer.Tessellation.EarcutNet
             }
         }
 
-        static float SignedArea(NativeSlice<float2> data, int start, int end)
+        static float SignedArea(NativeArray<Vector3> data)
         {
             var sum = default(float);
-
+            int start = 0;
+            int end = data.Length;
             for (int i = start, j = end - 1; i < end; i++)
             {
                 sum += (data[j].x - data[i].x) * (data[i].y + data[j].y);
