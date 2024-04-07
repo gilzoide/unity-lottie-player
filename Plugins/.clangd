@@ -1,0 +1,17 @@
+CompileFlags:
+  Add:
+    - -std=c++14
+    - -fno-exceptions
+    - -fno-unwind-tables
+    - -fno-asynchronous-unwind-tables
+    - -fno-rtti
+    - -Wall
+    - -fvisibility=hidden
+    - -Wnon-virtual-dtor
+    - -Woverloaded-virtual
+    - -Wno-unused-parameter
+    - -Isrc~
+    - -Irlottie~/inc
+    - -Irlottie~/src
+    - -Irlottie~/src/vector
+    - -Irlottie~/src/vector/freetype
