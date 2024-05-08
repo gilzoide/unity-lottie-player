@@ -65,13 +65,18 @@ namespace Gilzoide.LottiePlayer
 
         protected override void OnPopulateMesh(VertexHelper vh)
         {
+            vh.Clear();
+            if (!_animation.IsValid())
+            {
+                return;
+            }
+
             Rect pixelAdjustedRect = GetPixelAdjustedRect();
             if (_keepAspect)
             {
                 pixelAdjustedRect = pixelAdjustedRect.AspectFit(_animation.GetSize().GetAspect());
             }
             Color32 color = this.color;
-            vh.Clear();
             vh.AddVert(new Vector3(pixelAdjustedRect.xMin, pixelAdjustedRect.yMin), color, new Vector2(0f, 1f));
             vh.AddVert(new Vector3(pixelAdjustedRect.xMin, pixelAdjustedRect.yMax), color, new Vector2(0f, 0f));
             vh.AddVert(new Vector3(pixelAdjustedRect.xMax, pixelAdjustedRect.yMax), color, new Vector2(1f, 0f));
