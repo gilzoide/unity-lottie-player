@@ -50,8 +50,6 @@
     // #include "wasm/rlottiewasm.cpp"  // We don't need this even for WebGL builds
 // end rlottie
 
-#include "IUnityInterface.h"
-
 extern "C" {
 
 // Additional overloads with access to "keepAspectRatio" parameter
@@ -84,15 +82,6 @@ RLOTTIE_API void lottie_animation_render_async_aspect(
     rlottie::Surface surface(buffer, width, height, bytes_per_line);
     animation->mRenderTask = animation->mAnimation->render(frame_number, surface, keep_aspect);
     animation->mBufferRef = buffer;
-}
-
-// Unity entrypoints
-void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginLoad(IUnityInterfaces * unityInterfaces) {
-    lottie_init();
-}
-
-void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginUnload() {
-    lottie_shutdown();
 }
 
 }  // extern "C"

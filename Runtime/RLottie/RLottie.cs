@@ -289,5 +289,23 @@ namespace Gilzoide.LottiePlayer.RLottie
 
         [DllImport(LibraryName)]
         public static extern void lottie_configure_model_cache_size(nuint cacheSize);
+
+        [DllImport(LibraryName)]
+        private static extern void lottie_init();
+
+        [DllImport(LibraryName)]
+        private static extern void lottie_shutdown();
+
+        static RLottieCApi()
+        {
+            lottie_init();
+            Application.quitting += Shutdown;
+        }
+
+        private static void Shutdown()
+        {
+            lottie_shutdown();
+            Application.quitting -= Shutdown;
+        }
     }
 }
