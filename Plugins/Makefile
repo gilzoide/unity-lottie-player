@@ -82,6 +82,7 @@ lib/Android/x86_64/liblottie-player.so: CXX = $(wildcard $(ANDROID_NDK_ROOT)/too
 lib/Android/x86/liblottie-player.so: CXX = $(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin/i686-linux-android19-clang++)
 
 # WebGL
+lib/WebGL/lottie-player.bc: CXXFLAGS += -DNO_THREAD_SUPPORT
 lib/WebGL/lottie-player.bc: src~/lottie-player.cpp | lib/WebGL
 	$(EMCXX) -o $@ -c $< $(CXXFLAGS) -emit-llvm
 
