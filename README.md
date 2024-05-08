@@ -9,3 +9,12 @@ Player for [Lottie](https://airbnb.io/lottie) animations, powered by [rlottie](h
 - [Job System](https://docs.unity3d.com/Manual/JobSystemOverview.html)-friendly: texture updates may run in background threads.
   Use `ILottieAnimation.CreateRenderJob(...)` extension method for scheduling an animation render job.
 - Supported platforms: Windows, Linux, macOS, iOS, tvOS, visionOS, Android, WebGL
+
+
+## How to install
+Either:
+- Install using the [Unity Package Manager](https://docs.unity3d.com/Manual/upm-ui-giturl.html) with the following URL:
+  ```
+  https://github.com/gilzoide/unity-lottie-player.git#1.0.0-preview1
+  ```
+- Clone this repository or download a snapshot of it directly inside your project's `Assets` or `Packages` folder.
