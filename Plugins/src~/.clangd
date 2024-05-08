@@ -10,8 +10,7 @@ CompileFlags:
     - -Wnon-virtual-dtor
     - -Woverloaded-virtual
     - -Wno-unused-parameter
-    - -Isrc~
-    - -Irlottie~/inc
-    - -Irlottie~/src
-    - -Irlottie~/src/vector
-    - -Irlottie~/src/vector/freetype
+    - -I../rlottie~/inc
+    - -I../rlottie~/src
+    - -I../rlottie~/src/vector
+    - -I../rlottie~/src/vector/freetype
