@@ -90,7 +90,7 @@ namespace Gilzoide.LottiePlayer
         {
             Pause();
             _time = startTime;
-            _playCoroutine = StartCoroutine(PlayRoutine());
+            Unpause();
         }
 
         [ContextMenu("Pause")]
@@ -106,7 +106,7 @@ namespace Gilzoide.LottiePlayer
         [ContextMenu("Unpause")]
         public void Unpause()
         {
-            if (!IsPlaying)
+            if (!IsPlaying && _animation.IsValid())
             {
                 _playCoroutine = StartCoroutine(PlayRoutine());
             }
