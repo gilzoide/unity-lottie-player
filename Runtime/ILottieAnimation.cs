@@ -83,6 +83,10 @@ namespace Gilzoide.LottiePlayer
         public static void Render<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, NativeArray<Color32> buffer, uint? bytesPerLine = null, bool keepAspectRatio = true)
             where TAnimation : ILottieAnimation
         {
+            if (buffer.Length < width * height)
+            {
+                throw new ArgumentException($"Buffer is not big enough for animation, expected at least {width * height} pixels, found {buffer.Length}", nameof(buffer));
+            }
             unsafe
             {
                 animation.Render(frameNum, width, height, (Color32*) buffer.GetUnsafePtr(), bytesPerLine ?? (uint) buffer.Length / width, keepAspectRatio);
@@ -92,6 +96,10 @@ namespace Gilzoide.LottiePlayer
         public static void Render<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, Color32[] buffer, uint? bytesPerLine = null, bool keepAspectRatio = true)
             where TAnimation : ILottieAnimation
         {
+            if (buffer.Length < width * height)
+            {
+                throw new ArgumentException($"Buffer is not big enough for animation, expected at least {width * height} pixels, found {buffer.Length}", nameof(buffer));
+            }
             unsafe
             {
                 fixed (Color32* ptr = buffer)
@@ -105,6 +113,10 @@ namespace Gilzoide.LottiePlayer
         public static void Render<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, ReadOnlySpan<Color32> buffer, uint? bytesPerLine = null, bool keepAspectRatio = true)
             where TAnimation : ILottieAnimation
         {
+            if (buffer.Length < width * height)
+            {
+                throw new ArgumentException($"Buffer is not big enough for animation, expected at least {width * height} pixels, found {buffer.Length}", nameof(buffer));
+            }
             unsafe
             {
                 fixed (Color32* ptr = buffer)
@@ -128,6 +140,10 @@ namespace Gilzoide.LottiePlayer
         public static void RenderAsync<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, NativeArray<Color32> buffer, uint? bytesPerLine = null, bool keepAspectRatio = true)
             where TAnimation : ILottieAnimation
         {
+            if (buffer.Length < width * height)
+            {
+                throw new ArgumentException($"Buffer is not big enough for animation, expected at least {width * height} pixels, found {buffer.Length}", nameof(buffer));
+            }
             unsafe
             {
                 animation.RenderAsync(frameNum, width, height, (Color32*) buffer.GetUnsafePtr(), bytesPerLine ?? (uint) buffer.Length / width, keepAspectRatio);
