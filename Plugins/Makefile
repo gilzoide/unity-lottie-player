@@ -73,13 +73,25 @@ lib/tvOS/liblottie-player.a: CXXFLAGS += -arch arm64 -isysroot $(shell xcrun --s
 lib/visionOS/liblottie-player.a: CXXFLAGS += -arch arm64 -isysroot $(shell xcrun --show-sdk-path --sdk xros)
 
 # Android
+check-ndk-root:
+ifndef ANDROID_NDK_ROOT
+	$(error ANDROID_NDK_ROOT must be set for Android builds!)
+endif
+ifeq ($(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin),)
+	$(error ANDROID_NDK_ROOT must point to a valid NDK installation. Could not find "$(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin")
+endif
+
 lib/Android/%/liblottie-player.so: CXXFLAGS += -static-libstdc++
 lib/Android/%/liblottie-player.so: STRIP = $(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin/llvm-strip)
 
 lib/Android/arm64/liblottie-player.so: CXX = $(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin/aarch64-linux-android21-clang++)
-lib/Android/arm32/liblottie-player.so: CXX = $(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin/armv7a-linux-androideabi19-clang++)
+lib/Android/arm64/liblottie-player.so: check-ndk-root
+lib/Android/arm32/liblottie-player.so: CXX = $(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin/armv7a-linux-androideabi21-clang++)
+lib/Android/arm32/liblottie-player.so: check-ndk-root
 lib/Android/x86_64/liblottie-player.so: CXX = $(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin/x86_64-linux-android21-clang++)
-lib/Android/x86/liblottie-player.so: CXX = $(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin/i686-linux-android19-clang++)
+lib/Android/x86_64/liblottie-player.so: check-ndk-root
+lib/Android/x86/liblottie-player.so: CXX = $(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin/i686-linux-android21-clang++)
+lib/Android/x86/liblottie-player.so: check-ndk-root
 
 # WebGL
 lib/WebGL/lottie-player.bc: CXXFLAGS += -DNO_THREAD_SUPPORT
