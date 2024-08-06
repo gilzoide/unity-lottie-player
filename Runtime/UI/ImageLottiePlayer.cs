@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace Gilzoide.LottiePlayer
 {
     [RequireComponent(typeof(CanvasRenderer))]
-    public class ImageLottiePlayer : Graphic
+    public class ImageLottiePlayer : MaskableGraphic
     {
         [Header("Animation Options")]
         [SerializeField] protected LottieAnimationAsset _animationAsset;
