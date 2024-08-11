@@ -1,7 +1,7 @@
 {
   "name": "com.gilzoide.lottie-player",
   "displayName": "Lottie Player",
-  "version": "1.0.0-preview1",
+  "version": "1.0.0",
   "description": "Player for Lottie animation files, powered by rlottie.",
   "homepage": "https://github.com/gilzoide/unity-lottie-player",
   "license": "Unlicense",
