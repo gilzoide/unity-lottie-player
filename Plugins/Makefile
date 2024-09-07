@@ -1,5 +1,5 @@
 CMAKE ?= cmake
-EMCMAKE ?= emcmake cmake
+EMCMAKE ?= emcmake
 COPY ?= cp
 
 ANDROID_NDK_ROOT ?=
@@ -40,6 +40,11 @@ lib/%/build~/librlottie.a: rlottie~ cmake-toolchains~/%.cmake
 	$(CMAKE) rlottie~ -B $(@D) --toolchain $(abspath cmake-toolchains~/$*.cmake) $(CMAKE_ARGS) -DBUILD_SHARED_LIBS=OFF
 	$(CMAKE) --build $(@D)
 
+lib/WebGL/build~/librlottie.a: CMAKE_ARGS += -DLOTTIE_THREAD=OFF
+lib/WebGL/build~/librlottie.a: rlottie~
+	$(EMCMAKE) cmake rlottie~ -B $(@D) $(CMAKE_ARGS) -DBUILD_SHARED_LIBS=OFF
+	$(CMAKE) --build $(@D)
+
 lib/%/lottie-player.dll: lib/%/build~/librlottie.dll
 	$(COPY) $< $@
 
@@ -67,11 +72,6 @@ lib/Android/arm32/liblottie-player.so: check-ndk-root
 lib/Android/x86_64/liblottie-player.so: check-ndk-root
 lib/Android/x86/liblottie-player.so: check-ndk-root
 
-# WebGL
-lib/WebGL/lottie-player.bc: CXXFLAGS += -DNO_THREAD_SUPPORT
-lib/WebGL/lottie-player.bc: src~/lottie-player.cpp | lib/WebGL
-	$(EMCXX) -o $@ -c $< $(CXXFLAGS) -emit-llvm
-
 # Targets
 windows-x86_64: lib/Windows/x86_64/lottie-player.dll
 windows-x86: lib/Windows/x86/lottie-player.dll
@@ -92,5 +92,5 @@ android-x86_64: lib/Android/x86_64/liblottie-player.so
 android-x86: lib/Android/x86/liblottie-player.so
 all-android: android-arm64 android-arm32 android-x86_64 android-x86
 
-webgl: lib/WebGL/lottie-player.bc
+webgl: lib/WebGL/liblottie-player.a
 all-webgl: webgl
