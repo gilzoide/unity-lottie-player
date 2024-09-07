@@ -1,3 +1,4 @@
 obj~
+build~
 *.o
 *.o.meta
