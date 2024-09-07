@@ -1,0 +1,11 @@
+set(CMAKE_SYSTEM_NAME "Windows")
+set(CMAKE_SYSTEM_PROCESSOR x86)
+
+set(CMAKE_C_COMPILER i686-w64-mingw32-gcc)
+set(CMAKE_C_FLAGS "-s")
+set(CMAKE_CXX_COMPILER i686-w64-mingw32-g++)
+set(CMAKE_CXX_FLAGS "-s")
+set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static")
+set(CMAKE_MODULE_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static")
+set(CMAKE_STATIC_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static")
+set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static")
