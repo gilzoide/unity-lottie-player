@@ -1,7 +1,11 @@
 CMAKE ?= cmake
-EMCMAKE ?= emcmake
 COPY ?= cp
-
+# WebGL/Emscripten setup
+EMCMAKE ?= emcmake
+# macOS code signing setup
+CODESIGN ?= codesign
+MACOS_CODESIGN_SIGNATURE ?=
+# Android setup
 ANDROID_NDK_ROOT ?=
 
 CMAKE_ARGS += \
@@ -35,6 +39,9 @@ lib/%/build~/librlottie.so: rlottie~ cmake-toolchains~/%.cmake
 lib/%/build~/librlottie.dylib: rlottie~ cmake-toolchains~/%.cmake
 	$(CMAKE) rlottie~ -B $(@D) --toolchain $(abspath cmake-toolchains~/$*.cmake) $(CMAKE_ARGS) -DBUILD_SHARED_LIBS=ON
 	$(CMAKE) --build $(@D)
+ifdef MACOS_CODESIGN_SIGNATURE
+	$(CODESIGN) -s "$(MACOS_CODESIGN_SIGNATURE)" $@
+endif
 
 lib/%/build~/librlottie.a: rlottie~ cmake-toolchains~/%.cmake
 	$(CMAKE) rlottie~ -B $(@D) --toolchain $(abspath cmake-toolchains~/$*.cmake) $(CMAKE_ARGS) -DBUILD_SHARED_LIBS=OFF
