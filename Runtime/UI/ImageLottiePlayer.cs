@@ -58,6 +58,7 @@ namespace Gilzoide.LottiePlayer
 
         protected override void OnDestroy()
         {
+            DiscardRenderJob();
             DestroyImmediate(_texture);
             _animation.Dispose();
             base.OnDestroy();
@@ -142,7 +143,9 @@ namespace Gilzoide.LottiePlayer
             {
                 return;
             }
-            else if (_animationAsset.CacheKey != _lastAnimationAssetCacheKey)
+
+            DiscardRenderJob();
+            if (_animationAsset.CacheKey != _lastAnimationAssetCacheKey)
             {
                 _animation.Dispose();
                 _lastAnimationAssetCacheKey = _animationAsset.CacheKey;
@@ -168,6 +171,7 @@ namespace Gilzoide.LottiePlayer
 
         protected void RenderNow()
         {
+            DiscardRenderJob();
             _animation.Render(_currentFrame, _texture, keepAspectRatio: false);
             _texture.Apply(true);
         }
@@ -182,6 +186,11 @@ namespace Gilzoide.LottiePlayer
             _lastRenderedFrame = _currentFrame;
             _renderJobHandle.Complete();
             _texture.Apply(true);
+        }
+
+        protected void DiscardRenderJob()
+        {
+            _renderJobHandle.Complete();
         }
 
 #if UNITY_EDITOR
