@@ -299,13 +299,6 @@ namespace Gilzoide.LottiePlayer.RLottie
         static RLottieCApi()
         {
             lottie_init();
-            Application.quitting += Shutdown;
-        }
-
-        private static void Shutdown()
-        {
-            lottie_shutdown();
-            Application.quitting -= Shutdown;
         }
     }
 }
