@@ -29,11 +29,11 @@ namespace Gilzoide.LottiePlayer
     public struct LottieAnimationRenderJob : IJob
     {
         private NativeLottieAnimation Animation;
-        private uint Frame;
-        private uint Width;
-        private uint Height;
+        private readonly uint Frame;
+        private readonly uint Width;
+        private readonly uint Height;
         private NativeArray<Color32> Buffer;
-        private bool KeepAspectRatio;
+        private readonly bool KeepAspectRatio;
 
         public LottieAnimationRenderJob(NativeLottieAnimation animation, uint frameNum, Texture2D texture, bool keepAspectRatio = true)
             : this(animation, frameNum, (uint) texture.width, (uint) texture.height, texture.GetRawTextureData<Color32>(), keepAspectRatio)
