@@ -160,7 +160,7 @@ namespace Gilzoide.LottiePlayer
                 || _height != _texture.height)
             {
                 DestroyImmediate(_texture);
-                _texture = _animation.CreateTexture(_width, _height, true);
+                _texture = _animation.CreateTexture(_width, _height, false);
             }
 
             if (!Application.isPlaying)
