@@ -86,6 +86,28 @@ namespace Gilzoide.LottiePlayer
             vh.AddTriangle(2, 3, 0);
         }
 
+        public void SetAnimationAsset(LottieAnimationAsset animationAsset)
+        {
+            if (_animationAsset == animationAsset)
+            {
+                return;
+            }
+            Pause();
+            _animationAsset = animationAsset;
+            RecreateAnimationIfNeeded();
+        }
+
+        public void SetAnimation(NativeLottieAnimation animation)
+        {
+            if (_animation == animation)
+            {
+                return;
+            }
+            Pause();
+            _animationAsset = null;
+            RecreateAnimationIfNeeded(animation);
+        }
+
         [ContextMenu("Play")]
         public void Play(float startTime = 0)
         {
@@ -139,22 +161,38 @@ namespace Gilzoide.LottiePlayer
 
         protected void RecreateAnimationIfNeeded()
         {
-            if (!_animationAsset)
+            if (_animationAsset != null && _animationAsset.CacheKey == _lastAnimationAssetCacheKey)
             {
                 return;
             }
 
-            DiscardRenderJob();
-            if (_animationAsset.CacheKey != _lastAnimationAssetCacheKey)
+            if (_animationAsset != null)
             {
-                _animation.Dispose();
                 _lastAnimationAssetCacheKey = _animationAsset.CacheKey;
+                RecreateAnimationIfNeeded(_animationAsset.CreateNativeAnimation());
+            }
+            else
+            {
+                _lastAnimationAssetCacheKey = null;
+                RecreateAnimationIfNeeded(NativeLottieAnimation.Invalid);
+            }
+        }
+
+        protected void RecreateAnimationIfNeeded(NativeLottieAnimation newAnimation)
+        {
+            if (_animation.IsValid())
+            {
+                DiscardRenderJob();
+                _animation.Dispose();
+                SetVerticesDirty();
             }
 
-            if (!_animation.IsValid())
+            if (!newAnimation.IsValid())
             {
-                _animation = _animationAsset.CreateNativeAnimation();
+                return;
             }
+
+            _animation = newAnimation;
             if (_texture == null
                 || _width != _texture.width
                 || _height != _texture.height)

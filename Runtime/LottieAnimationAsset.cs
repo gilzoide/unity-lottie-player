@@ -58,7 +58,7 @@ namespace Gilzoide.LottiePlayer
 
         public bool UpdateMetadata()
         {
-            using (var animation = CreateNativeAnimation())
+            using NativeLottieAnimation animation = CreateNativeAnimation();
             if (animation.IsCreated)
             {
                 _size = animation.GetSize();
