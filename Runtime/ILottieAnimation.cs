@@ -17,8 +17,18 @@ namespace Gilzoide.LottiePlayer
         uint GetFrameAtPos(float pos);
 
         unsafe LayerNode* RenderTree(uint frameNum, uint width, uint height);
-        unsafe void Render(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine, bool keepAspectRatio = true);
-        unsafe void RenderAsync(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine, bool keepAspectRatio = true);
+        [Obsolete("bytesPerLine is ignored, prefer the overload that does not receive it.")]
+        unsafe void Render(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine, bool keepAspectRatio = true)
+        {
+            Render(frameNum, width, height, buffer, keepAspectRatio);
+        }
+        unsafe void Render(uint frameNum, uint width, uint height, Color32* buffer, bool keepAspectRatio = true);
+        [Obsolete("bytesPerLine is ignored, prefer the overload that does not receive it.")]
+        unsafe void RenderAsync(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine, bool keepAspectRatio = true)
+        {
+            RenderAsync(frameNum, width, height, buffer, keepAspectRatio);
+        }
+        unsafe void RenderAsync(uint frameNum, uint width, uint height, Color32* buffer, bool keepAspectRatio = true);
         void RenderAsyncFlush();
 
         unsafe MarkerList* GetMarkerList();
@@ -80,7 +90,7 @@ namespace Gilzoide.LottiePlayer
             return animation.IsValid() ? new Texture2D(width, height, TextureFormat.BGRA32, mipChain, linear) : null;
         }
 
-        public static void Render<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, NativeArray<Color32> buffer, uint? bytesPerLine = null, bool keepAspectRatio = true)
+        public static void Render<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, NativeArray<Color32> buffer, bool keepAspectRatio = true)
             where TAnimation : ILottieAnimation
         {
             if (buffer.Length < width * height)
@@ -89,11 +99,17 @@ namespace Gilzoide.LottiePlayer
             }
             unsafe
             {
-                animation.Render(frameNum, width, height, (Color32*) buffer.GetUnsafePtr(), bytesPerLine ?? (uint) buffer.Length / width, keepAspectRatio);
+                animation.Render(frameNum, width, height, (Color32*) buffer.GetUnsafePtr(), keepAspectRatio);
             }
         }
+        [Obsolete("bytesPerLine is ignored, prefer the overload that does not receive it.")]
+        public static void Render<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, NativeArray<Color32> buffer, uint? bytesPerLine, bool keepAspectRatio = true)
+            where TAnimation : ILottieAnimation
+        {
+            Render(animation, frameNum, width, height, buffer, keepAspectRatio);
+        }
 
-        public static void Render<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, Color32[] buffer, uint? bytesPerLine = null, bool keepAspectRatio = true)
+        public static void Render<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, Color32[] buffer, bool keepAspectRatio = true)
             where TAnimation : ILottieAnimation
         {
             if (buffer.Length < width * height)
@@ -104,13 +120,18 @@ namespace Gilzoide.LottiePlayer
             {
                 fixed (Color32* ptr = buffer)
                 {
-                    animation.Render(frameNum, width, height, ptr, bytesPerLine ?? (uint) buffer.Length / width, keepAspectRatio);
+                    animation.Render(frameNum, width, height, ptr, keepAspectRatio);
                 }
             }
         }
+        [Obsolete("bytesPerLine is ignored, prefer the overload that does not receive it.")]
+        public static void Render<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, Color32[] buffer, uint? bytesPerLine, bool keepAspectRatio = true)
+            where TAnimation : ILottieAnimation
+        {
+            Render(animation, frameNum, width, height, buffer, keepAspectRatio);
+        }
 
-#if UNITY_2021_2_OR_NEWER
-        public static void Render<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, ReadOnlySpan<Color32> buffer, uint? bytesPerLine = null, bool keepAspectRatio = true)
+        public static void Render<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, ReadOnlySpan<Color32> buffer, bool keepAspectRatio = true)
             where TAnimation : ILottieAnimation
         {
             if (buffer.Length < width * height)
@@ -121,11 +142,16 @@ namespace Gilzoide.LottiePlayer
             {
                 fixed (Color32* ptr = buffer)
                 {
-                    animation.Render(frameNum, width, height, ptr, bytesPerLine ?? (uint) buffer.Length / width, keepAspectRatio);
+                    animation.Render(frameNum, width, height, ptr, keepAspectRatio);
                 }
             }
         }
-#endif
+        [Obsolete("bytesPerLine is ignored, prefer the overload that does not receive it.")]
+        public static void Render<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, ReadOnlySpan<Color32> buffer, uint? bytesPerLine, bool keepAspectRatio = true)
+            where TAnimation : ILottieAnimation
+        {
+            Render(animation, frameNum, width, height, buffer, keepAspectRatio);
+        }
 
         public static void Render<TAnimation>(this TAnimation animation, uint frameNum, Texture2D texture, bool keepAspectRatio = true)
             where TAnimation : ILottieAnimation
@@ -134,10 +160,20 @@ namespace Gilzoide.LottiePlayer
             {
                 throw new ArgumentNullException(nameof(texture));
             }
-            animation.Render(frameNum, (uint) texture.width, (uint) texture.height, texture.GetRawTextureData<Color32>(), (uint) texture.width * (uint) UnsafeUtility.SizeOf<Color32>(), keepAspectRatio);
+            animation.Render(frameNum, (uint) texture.width, (uint) texture.height, texture.GetRawTextureData<Color32>(), keepAspectRatio);
         }
 
-        public static void RenderAsync<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, NativeArray<Color32> buffer, uint? bytesPerLine = null, bool keepAspectRatio = true)
+        public static void RenderAsync<TAnimation>(this TAnimation animation, uint frameNum, Texture2D texture, bool keepAspectRatio = true)
+            where TAnimation : ILottieAnimation
+        {
+            if (texture == null)
+            {
+                throw new ArgumentNullException(nameof(texture));
+            }
+            animation.RenderAsync(frameNum, (uint) texture.width, (uint) texture.height, texture.GetRawTextureData<Color32>(), keepAspectRatio);
+        }
+
+        public static void RenderAsync<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, NativeArray<Color32> buffer, bool keepAspectRatio = true)
             where TAnimation : ILottieAnimation
         {
             if (buffer.Length < width * height)
@@ -146,8 +182,14 @@ namespace Gilzoide.LottiePlayer
             }
             unsafe
             {
-                animation.RenderAsync(frameNum, width, height, (Color32*) buffer.GetUnsafePtr(), bytesPerLine ?? (uint) buffer.Length / width, keepAspectRatio);
+                animation.RenderAsync(frameNum, width, height, (Color32*) buffer.GetUnsafePtr(), keepAspectRatio);
             }
+        }
+        [Obsolete("bytesPerLine is ignored, prefer the overload that does not receive it.")]
+        public static void RenderAsync<TAnimation>(this TAnimation animation, uint frameNum, uint width, uint height, NativeArray<Color32> buffer, uint? bytesPerLine, bool keepAspectRatio = true)
+            where TAnimation : ILottieAnimation
+        {
+            RenderAsync(animation, frameNum, width, height, buffer, keepAspectRatio);
         }
     }
 }
