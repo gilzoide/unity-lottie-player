@@ -73,16 +73,16 @@ namespace Gilzoide.LottiePlayer
             return RLottieCApi.lottie_animation_render_tree(NativeHandle, frameNum, width, height);
         }
 
-        public unsafe readonly void Render(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine, bool keepAspectRatio = true)
+        public unsafe readonly void Render(uint frameNum, uint width, uint height, Color32* buffer, bool keepAspectRatio = true)
         {
             ThrowIfNotCreated();
-            RLottieCApi.lottie_animation_render_aspect(NativeHandle, frameNum, buffer, width, height, bytesPerLine, keepAspectRatio ? 1 : 0);
+            RLottieCApi.lottie_animation_render_aspect(NativeHandle, frameNum, buffer, width, height, width * (uint) UnsafeUtility.SizeOf<Color32>(), keepAspectRatio ? 1 : 0);
         }
 
-        public unsafe readonly void RenderAsync(uint frameNum, uint width, uint height, Color32* buffer, uint bytesPerLine, bool keepAspectRatio = true)
+        public unsafe readonly void RenderAsync(uint frameNum, uint width, uint height, Color32* buffer, bool keepAspectRatio = true)
         {
             ThrowIfNotCreated();
-            RLottieCApi.lottie_animation_render_async_aspect(NativeHandle, frameNum, buffer, width, height, bytesPerLine, keepAspectRatio ? 1 : 0);
+            RLottieCApi.lottie_animation_render_async_aspect(NativeHandle, frameNum, buffer, width, height, width * (uint) UnsafeUtility.SizeOf<Color32>(), keepAspectRatio ? 1 : 0);
         }
 
         public readonly void RenderAsyncFlush()
