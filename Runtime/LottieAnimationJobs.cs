@@ -18,7 +18,7 @@ namespace Gilzoide.LottiePlayer
             return new LottieAnimationRenderJob(animation, frameNum, width, height, buffer, keepAspectRatio);
         }
 
-        [Obsolete]
+        [Obsolete("bytesPerLine is ignored, prefer the overload that does not receive it.")]
         public static LottieAnimationRenderJob CreateRenderJob(this NativeLottieAnimation animation, uint frameNum, uint width, uint height, NativeArray<Color32> buffer, uint? bytesPerLine, bool keepAspectRatio = true)
         {
             return CreateRenderJob(animation, frameNum, width, height, buffer, keepAspectRatio);
@@ -50,7 +50,7 @@ namespace Gilzoide.LottiePlayer
             KeepAspectRatio = keepAspectRatio;
         }
 
-        [Obsolete]
+        [Obsolete("bytesPerLine is ignored, prefer the overload that does not receive it.")]
         public LottieAnimationRenderJob(NativeLottieAnimation animation, uint frameNum, uint width, uint height, NativeArray<Color32> buffer, uint? bytesPerLine, bool keepAspectRatio = true)
             : this(animation, frameNum, width, height, buffer, keepAspectRatio)
         {
