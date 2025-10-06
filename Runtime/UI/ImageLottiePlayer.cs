@@ -109,7 +109,12 @@ namespace Gilzoide.LottiePlayer
         }
 
         [ContextMenu("Play")]
-        public void Play(float startTime = 0)
+        public void Play()
+        {
+            Play(0);
+        }
+
+        public void Play(float startTime)
         {
             Pause();
             _time = startTime;
