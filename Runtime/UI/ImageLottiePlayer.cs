@@ -25,6 +25,7 @@ namespace Gilzoide.LottiePlayer
         protected uint _lastRenderedFrame = 0;
         protected JobHandle _renderJobHandle;
         protected Coroutine _playCoroutine;
+        protected bool _anyFrameDrawn;
         private string _lastAnimationAssetCacheKey;
 
         public override Texture mainTexture => _texture;
@@ -67,7 +68,7 @@ namespace Gilzoide.LottiePlayer
         protected override void OnPopulateMesh(VertexHelper vh)
         {
             vh.Clear();
-            if (!_animation.IsValid())
+            if (!_animation.IsValid() || !_anyFrameDrawn)
             {
                 return;
             }
@@ -185,6 +186,8 @@ namespace Gilzoide.LottiePlayer
 
         protected void RecreateAnimationIfNeeded(NativeLottieAnimation newAnimation)
         {
+            _anyFrameDrawn = false;
+
             if (_animation.IsValid())
             {
                 DiscardRenderJob();
@@ -216,7 +219,7 @@ namespace Gilzoide.LottiePlayer
         {
             DiscardRenderJob();
             _animation.Render(_currentFrame, _texture, keepAspectRatio: false);
-            _texture.Apply(true);
+            ApplyTexture();
         }
 
         protected void ScheduleRenderJob(uint frame)
@@ -228,12 +231,22 @@ namespace Gilzoide.LottiePlayer
         {
             _lastRenderedFrame = _currentFrame;
             _renderJobHandle.Complete();
-            _texture.Apply(true);
+            ApplyTexture();
         }
 
         protected void DiscardRenderJob()
         {
             _renderJobHandle.Complete();
+        }
+
+        protected void ApplyTexture()
+        {
+            _texture.Apply(true);
+            if (!_anyFrameDrawn)
+            {
+                _anyFrameDrawn = true;
+                SetVerticesDirty();
+            }
         }
 
 #if UNITY_EDITOR
